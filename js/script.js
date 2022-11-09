@@ -60,7 +60,6 @@ class Cart {
   showResume() {
     let productsDetail = "";
     this.getTotalPrice();
-    console.log(this.getPorductList());
     this.getPorductList().forEach((element) => {
       productsDetail += `${element.prodName}
       `;
@@ -81,7 +80,7 @@ class Cart {
 
 class Product {
   constructor(prodId, prodName, prodPrice) {
-    this.prodId = prodId
+    this.prodId = prodId;
     this.prodName = prodName;
     this.prodPrice = prodPrice;
     this.prodAmount = 1;
@@ -112,8 +111,46 @@ class Product {
 let userInfo;
 let quantity = 0;
 let cart = new Cart();
+const productContainer = document.querySelector("#home_products-all");
+const productOfferContainer = document.querySelector("#home_products-offer");
+const categories = document.querySelectorAll(".badge-category");
+categories.forEach((category) => {
+    category.addEventListener("click", (e) => {
+      if (e.target.dataset.category !== "all") {
+        removeBgBadge(e.target);
+        loadProducts(getProductsByCategory(e.target.dataset.category),productContainer);
+      } else {
+        removeBgBadge(e.target);
+        loadProducts(products,productContainer);
+      }
+      updateFavorites()
+    });
+  });
+
+function removeBgBadge(categorySelected) {
+  categories.forEach((category) => {
+    category.classList.remove("bg-dark");
+    category.classList.add("bg-secondary");
+  });
+  categorySelected.classList.add("bg-dark");
+}
+
+function updateFavorites() {
+  const favoritos = document.querySelectorAll(".favorito");
+  favoritos.forEach((favorito) => {
+    favorito.addEventListener("click", (e) => {
+      if (e.target.classList.contains("fa-star")) {
+        e.target.classList.remove("fa-star");
+        e.target.classList.add("fa-star-o");
+      } else {
+        e.target.classList.add("fa-star");
+        e.target.classList.remove("fa-star-o");
+      }
+    });
+  });
+}
 // Lista de productos
-let products = [
+const products = [
   {
     id: 1,
     name: "Notebook Dell G5",
@@ -179,7 +216,7 @@ let products = [
     name: "Macbook Pro Apple",
     description: "2021 512gb 16gb Ram M1 Chip Neural Engine",
     price: 1099999,
-    offer: true,
+    offer: false,
     image: "7-notebook.jpg",
     category: "notebook",
     outstanding: true,
@@ -189,7 +226,7 @@ let products = [
     name: "Notebook Dell",
     description: "Nvidia Rtx 3050 Intel Core I7 512gb 16gb Ram",
     price: 449999,
-    offer: true,
+    offer: false,
     image: "8-notebook.jpg",
     category: "notebook",
     outstanding: true,
@@ -209,7 +246,7 @@ let products = [
     name: "Notebook Lenovo 14",
     description: "4gb Ram 128gb Intel Pentium Silver N5030 ",
     price: 119999,
-    offer: true,
+    offer: false,
     image: "10-notebook.jpg",
     category: "notebook",
     outstanding: false,
@@ -219,7 +256,7 @@ let products = [
     name: "Notebook Hp",
     description: "16gb Ram 512gb Ssd Nvidia Rtx 3050 Ti Amd Ryzen 7 ",
     price: 599999,
-    offer: true,
+    offer: false,
     image: "11-notebook.jpg",
     category: "notebook",
     outstanding: false,
@@ -229,7 +266,7 @@ let products = [
     name: "Notebook Msi",
     description: "16gb 512gb Intel Core I7 Nvidia Rtx 3070 Gaming ",
     price: 649999,
-    offer: true,
+    offer: false,
     image: "12-notebook.jpg",
     category: "notebook",
     outstanding: false,
@@ -280,7 +317,7 @@ let products = [
     description:
       "Dell priceiplex 7470 Intel Core i5 8GB 256GB SSD Windows 10 Pro ",
     price: 114999,
-    offer: true,
+    offer: false,
     image: "5-pc.jpg",
     category: "pc",
     outstanding: false,
@@ -290,7 +327,7 @@ let products = [
     name: "Pc De Escritorio Iqual",
     description: "Intel Core I3 10105 8gb Ddr4 Ssd 240 ",
     price: 75399,
-    offer: true,
+    offer: false,
     image: "6-pc.jpg",
     category: "pc",
     outstanding: false,
@@ -330,7 +367,7 @@ let products = [
     name: "PC HP",
     description: "260 G4 Celeron 5205U 4GB 1TB Windows 10 Home 246F9LT ",
     price: 73399,
-    offer: true,
+    offer: false,
     image: "10-pc.jpg",
     category: "pc",
     outstanding: false,
@@ -340,7 +377,7 @@ let products = [
     name: "PC PCBOX",
     description: "Intel Celeron 240GB HDD 4GB RAM WIN10 HSL ",
     price: 64029,
-    offer: true,
+    offer: false,
     image: "11-pc.jpg",
     category: "pc",
     outstanding: false,
@@ -390,7 +427,7 @@ let products = [
     name: "Celular Samsung Galaxy S22 Ultra",
     description: "Burgundy SM-S908EDRMARO ",
     price: 394109,
-    offer: true,
+    offer: false,
     image: "5-celular.jpg",
     category: "celulares",
     outstanding: false,
@@ -400,7 +437,7 @@ let products = [
     name: "Celular Motorola Moto Edge 30 Pro",
     description: "256 Gb Verde Cosmos 8 Gb Ram ",
     price: 249999,
-    offer: true,
+    offer: false,
     image: "6-celular.jpg",
     category: "celulares",
     outstanding: false,
@@ -430,7 +467,7 @@ let products = [
     name: "Samsung Galaxy S22 Ultra",
     description: "Sm-s908 256gb Liberado Blanco ",
     price: 599999,
-    offer: true,
+    offer: false,
     image: "9-celular.jpg",
     category: "celulares",
     outstanding: true,
@@ -450,7 +487,7 @@ let products = [
     name: "Celular Quantum Q20",
     description: "4G 6.1 pulgadas 128 4GB Azul Android 10 S905-AR-B-TDF ",
     price: 44969,
-    offer: true,
+    offer: false,
     image: "11-celular.jpg",
     category: "celulares",
     outstanding: true,
@@ -470,7 +507,7 @@ let products = [
     name: "Tablet Amazon Fire 7",
     description: "2019 Kfmuwi 7 16gb Black Y 1gb De Memoria Ram ",
     price: 22999,
-    offer: true,
+    offer: false,
     image: "1-tablet.jpg",
     category: "tablets",
     outstanding: false,
@@ -490,7 +527,7 @@ let products = [
     name: "Samsung Galaxy Tab A7 Lite",
     description: "Tablet 32gb 3gb Ram Octa-core Grey ",
     price: 54999,
-    offer: true,
+    offer: false,
     image: "3-tablet.jpg",
     category: "tablets",
     outstanding: false,
@@ -520,7 +557,7 @@ let products = [
     name: "Tablet Samsung Galaxy A7 Lite",
     description: "Sm-t225 32gb 3gb Ram Octa-core silver ",
     price: 89999,
-    offer: true,
+    offer: false,
     image: "6-tablet.jpg",
     category: "tablets",
     outstanding: false,
@@ -590,7 +627,7 @@ let products = [
     name: "Pantalla Monitor Gamer Viewsonic Xg2705 27",
     description: "Full Hd 144hz",
     price: 119999,
-    offer: true,
+    offer: false,
     image: "1-monitor.jpg",
     category: "monitores",
     outstanding: false,
@@ -620,7 +657,7 @@ let products = [
     name: "Monitor Samsung 27 QHD Odyssey",
     description: "G5 165hz Curvo LS27AG550ELX",
     price: 154059,
-    offer: true,
+    offer: false,
     image: "4-monitor.jpg",
     category: "monitores",
     outstanding: false,
@@ -630,7 +667,7 @@ let products = [
     name: "Monitor Samsung 24 FHD Odyssey",
     description: "G3 144hz LF24G35TFWLX",
     price: 100619,
-    offer: true,
+    offer: false,
     image: "5-monitor.jpg",
     category: "monitores",
     outstanding: false,
@@ -640,7 +677,7 @@ let products = [
     name: "Monitor Samsung 27 QHD",
     description: "A700 IPS LS27A700NWLX",
     price: 155279,
-    offer: true,
+    offer: false,
     image: "6-monitor.jpg",
     category: "monitores",
     outstanding: false,
@@ -680,7 +717,7 @@ let products = [
     name: "Monitor Gamer IPS 24",
     description: "Full HD LG 24MK600M con Freesync",
     price: 149999,
-    offer: true,
+    offer: false,
     image: "10-monitor.jpg",
     category: "monitores",
     outstanding: true,
@@ -690,7 +727,7 @@ let products = [
     name: 'Monitor Gamer VA 32" QHD LG',
     description: "UltraGear 32GN600 con Freesync y 165Hz",
     price: 175999,
-    offer: true,
+    offer: false,
     image: "11-monitor.jpg",
     category: "monitores",
     outstanding: false,
@@ -700,7 +737,7 @@ let products = [
     name: "Monitor Gamer 24 Pulgadas Benq Zowie",
     description: "Xl2411k Esports 144hz",
     price: 179999,
-    offer: true,
+    offer: false,
     image: "12-monitor.jpg",
     category: "monitores",
     outstanding: false,
@@ -730,7 +767,7 @@ let products = [
     name: "Teclado y Mouse Noga",
     description: "NKB-300",
     price: 1349,
-    offer: true,
+    offer: false,
     image: "3-accesorio.jpg",
     category: "accesorios",
     outstanding: false,
@@ -740,7 +777,7 @@ let products = [
     name: "Auriculares Philips Supraurales",
     description: "Con Cable y Micrófono Blancos TAH4105WT 00",
     price: 4919,
-    offer: true,
+    offer: false,
     image: "4-accesorio.jpg",
     category: "accesorios",
     outstanding: true,
@@ -750,7 +787,7 @@ let products = [
     name: "Teclado Mecánico y Mouse",
     description: "Level Up Pegasus con Switches Outemu Blue",
     price: 9889,
-    offer: true,
+    offer: false,
     image: "5-accesorio.jpg",
     category: "accesorios",
     outstanding: false,
@@ -853,74 +890,105 @@ function login() {
 }
 
 // Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
-function init() {
-  login();
-  let stay = true;
-  let categoryId;
-  let productSelected;
-  while (stay) {
-    categoryId = askUserForCategory();
-    productSelected = askUserByProduct(categoryId);
-    cart.setProduct(productSelected);
-    let answer = askUserIfcontinues();
-    if (answer === 2) stay = false;
-  }
-  cart.showResume();
+async function init() {
+  loadProducts(getProductsOffer(), productOfferContainer);
+  loadProducts(products, productContainer);
+  updateFavorites()
+  // login();
 }
-
-// Verifica la cantidad de productos ingresados al carrito y si corresponde aplica un descuento.
 
 // Solicita al usuario que ingrese un producto al carrito.
-function askUserByProduct(categoryId) {
-  let productsByCategory = getProductsByCategory(categoryId);
-  let productsOption = "";
-  let ids = [];
-  productsByCategory.forEach((product) => {
-    ids.push(product.id);
-    productsOption += `${product.id} - ${product.name} - $${product.price} \n`;
-  });
-  let productId = parseInt(prompt(`Seleccione un producto: \n\n${productsOption} \n`));
-  while (!ids.includes(productId)) {
-    alert("No es una opcion valida!");
-    productId = parseInt(prompt(`Seleccione un producto: \n\n${productsOption} \n`));
-  }
-  let productSelected = products.find(element => element.id === productId);
-  return new Product(productSelected.id, productSelected.name, productSelected.price);
-}
+// function askUserByProduct(categoryId) {
+//   let productsByCategory = getProductsByCategory(categoryId);
+//   let productsOption = "";
+//   let ids = [];
+//   productsByCategory.forEach((product) => {
+//     ids.push(product.id);
+//     productsOption += `${product.id} - ${product.name} - $${product.price} \n`;
+//   });
+//   let productId = parseInt(
+//     prompt(`Seleccione un producto: \n\n${productsOption} \n`)
+//   );
+//   while (!ids.includes(productId)) {
+//     alert("No es una opcion valida!");
+//     productId = parseInt(
+//       prompt(`Seleccione un producto: \n\n${productsOption} \n`)
+//     );
+//   }
+//   let productSelected = products.find((element) => element.id === productId);
+//   return new Product(
+//     productSelected.id,
+//     productSelected.name,
+//     productSelected.price
+//   );
+// }
 
-function askUserForCategory() {
-  let categories = getCategories();
-  let categoriesOption = "";
-  categories.forEach((category) => {
-    categoriesOption += `${categories.indexOf(category) + 1} - ${category} \n`;
-  });
-  return (
-    parseInt(prompt(`Seleccione una categoria:\n\n${categoriesOption}\n`)) - 1
-  );
-}
-
-function getProductsByCategory(categoryId) {
-  let category = getCategories()[categoryId];
+function getProductsByCategory(category) {
   return products.filter((product) => product.category === category);
 }
 
-function getCategories() {
-  return products
-    .map((product) => product.category)
-    .reduce((prev, next) => {
-      if (!prev.includes(next)) prev.push(next);
-      return prev;
-    }, []);
+function getProductsOffer() {
+  return products.filter((product) => product.offer === true);
 }
 
-// Consulta al usuario si desea continuar con la compra
-function askUserIfcontinues() {
-  let res = parseInt(prompt(`Desea seguir comprando? 1 - Si o 2 - No`));
-  while (res !== 1 && res !== 2) {
-    res = parseInt(prompt(`Desea seguir comprando? 1 - Si o 2 - No`));
-  }
-  return res;
+function getProductsFavorites() {
+  // TODO:
 }
+
+// Muestra productos en el DOM, segun el contenedor indicado.
+function loadProducts(products, container) {
+  if (container.children.length > 2) {
+    document
+      .querySelectorAll("#home_products-all .products")
+      .forEach((child) => {
+        container.removeChild(child);
+      });
+  }
+  let name = "";
+  for (let i = 0; i <= Math.round(products.length / 5); i++) {
+    let divContainer = document.createElement("div");
+    divContainer.classList = "products";
+    for (let j = i * 5; j < (i + 1) * 5; j++) {
+      if (products[j]) {
+        name =
+          products[j].name.length >= 15
+            ? products[j].name.substring(0, 13) + "..."
+            : (name = products[j].name);
+        divContainer.innerHTML += `<div class="card card-product">
+    <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
+    <img
+      src="assets/img/productos/${products[j].image}"
+      class="card-img-top"
+      alt="${products[j].name}"
+    />
+    <div class="card-body card-body-mod">
+      <p class="card-title-mod">${name}</p>
+      <div class="card-cart">
+        ${
+          products[j].offer
+            ? `<p class="card-price text-success fw-bold">$ ${new Intl.NumberFormat("de-DE").format(
+                products[j].price
+              )}</p>`
+            : `<p class="card-price">$ ${new Intl.NumberFormat("de-DE").format(
+                products[j].price
+              )}</p>`
+        }
+        <span class="card-btn"
+          ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
+        ></span>
+      </div>
+    </div>
+    </div>`;
+      }
+    }
+    container.appendChild(divContainer);
+  }
+}
+
+
 
 // Ejecuta el programa
-init();
+window.addEventListener('load', ()=>{
+  init();
+})
+  

@@ -6,6 +6,7 @@
 .detalle .detalle-producto .card-detail .card-btn,
 .navbar-bg .navbar-urls .nav-link,
 .navbar-bg .navbar-urls .dropdown-menu .dropdown-item-mod {
+  cursor: pointer;
   font-size: 1.5rem;
   font-family: "Poppins", sans-serif;
   color: #D6D6D6;

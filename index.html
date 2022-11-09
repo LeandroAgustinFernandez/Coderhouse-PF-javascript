@@ -28,7 +28,7 @@
             <img class="logo" src="./assets/img/logo.png" alt="Libre Mercado" />
           </a>
           <div class="order-lg-1 order-0 navbar-cart">
-            <i class="fa fa-shopping-cart fa-3x" aria-hidden="true"></i>
+            <i class="fa fa-shopping-cart fa-3x" aria-hidden="true" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"></i>
             <div class="cart-contador">3</div>
           </div>
           <button
@@ -42,7 +42,6 @@
           >
             <span class="navbar-toggler-icon navbar-toggler-icon-mod"></span>
           </button>
-
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 navbar-urls">
               <li class="nav-item nav-item-mod">
@@ -153,97 +152,10 @@
             <p class="payment-title">Efectivo</p>
           </div>
         </article>
-        <article class="home_products-details">
+        <article class="home_products-details" id="home_products-offer">
           <p class="title">Ofertas</p>
-          <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-          </div>
         </article>
-        <article class="home_products-details">
+        <article class="home_products-details" id="home_products-favorite">
           <p class="title">
             Favoritos <a class="" href="./view/favoritos.html">ver todos</a>
           </p>
@@ -329,453 +241,72 @@
             </div>
           </div>
         </article>
-        <article class="home_products-details">
+        <article class="home_products-details" id="home_products-all">
           <p class="title">Productos</p>
           <div class="home_product-filter px-0">
             <ul class="d-flex w-100 justify-content-around my-5">
-                <li class="list-group-item"><h3><span class="badge bg-dark">Todos</span></h3></li>
-                <li class="list-group-item"><h3><span class="badge bg-secondary">PC</span></h3></li>
-                <li class="list-group-item"><h3><span class="badge bg-secondary">Notebook</span></h3></li>
-                <li class="list-group-item"><h3><span class="badge bg-secondary">Tablets</span></h3></li>
-                <li class="list-group-item"><h3><span class="badge bg-secondary">Celulares</span></h3></li>
-                <li class="list-group-item"><h3><span class="badge bg-secondary">Monitores</span></h3></li>
-                <li class="list-group-item"><h3><span class="badge bg-secondary">Periféricos</span></h3></li>
+              <li class="list-group-item">
+                <h3>
+                  <span data-category="all" class="badge badge-category bg-dark"
+                    >Todos</span
+                  >
+                </h3>
+              </li>
+              <li class="list-group-item">
+                <h3>
+                  <span
+                    data-category="pc"
+                    class="badge badge-category bg-secondary"
+                    >PC</span
+                  >
+                </h3>
+              </li>
+              <li class="list-group-item">
+                <h3>
+                  <span
+                    data-category="notebook"
+                    class="badge badge-category bg-secondary"
+                    >Notebook</span
+                  >
+                </h3>
+              </li>
+              <li class="list-group-item">
+                <h3>
+                  <span
+                    data-category="tablets"
+                    class="badge badge-category bg-secondary"
+                    >Tablets</span
+                  >
+                </h3>
+              </li>
+              <li class="list-group-item">
+                <h3>
+                  <span
+                    data-category="celulares"
+                    class="badge badge-category bg-secondary"
+                    >Celulares</span
+                  >
+                </h3>
+              </li>
+              <li class="list-group-item">
+                <h3>
+                  <span
+                    data-category="monitores"
+                    class="badge badge-category bg-secondary"
+                    >Monitores</span
+                  >
+                </h3>
+              </li>
+              <li class="list-group-item">
+                <h3>
+                  <span
+                    data-category="accesorios"
+                    class="badge badge-category bg-secondary"
+                    >Periféricos</span
+                  >
+                </h3>
+              </li>
             </ul>
-          </div>
-          <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
           </div>
         </article>
       </section>
@@ -811,6 +342,27 @@
         </article>
       </section>
     </footer>
+    <!-- Apartado de los productos seleccionados -->
+    <div
+      class="offcanvas offcanvas-end"
+      tabindex="-1"
+      id="offcanvasRight"
+      aria-labelledby="offcanvasRightLabel"
+    >
+      <div class="offcanvas-header">
+        <h4 id="offcanvasRightLabel">Resumen de compra</h4>
+        <button
+          type="button"
+          class="btn-close text-reset"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <!-- LISTA DE COMPRA -->
+      </div>
+    </div>
+    
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
