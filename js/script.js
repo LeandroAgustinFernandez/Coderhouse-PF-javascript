@@ -111,138 +111,21 @@ class Product {
 let userInfo;
 let quantity = 0;
 let cart = new Cart();
+
 const productContainer = document.querySelector("#home_products-all");
 const productOfferContainer = document.querySelector("#home_products-offer");
+const productFavoriteContainer = document.querySelector(
+  "#home_products-favorite"
+);
 const categories = document.querySelectorAll(".badge-category");
 const cartItems = document.querySelector(".fa-shopping-cart");
 const resume = document.querySelector("#resume");
 const cantProducts = document.querySelector(".cart-contador");
 const finalPrice = document.querySelector("#offcanvas-footer");
 const btnLogin = document.querySelector("#btn-login");
+const productDetails = document.querySelectorAll(".home_products-details");
+const favorites = [];
 
-categories.forEach((category) => {
-  category.addEventListener("click", (e) => {
-    if (e.target.dataset.category !== "all") {
-      removeBgBadge(e.target);
-      loadProducts(
-        getProductsByCategory(e.target.dataset.category),
-        productContainer
-      );
-    } else {
-      removeBgBadge(e.target);
-      loadProducts(products, productContainer);
-    }
-    updateFavorites();
-    cartButtons();
-  });
-});
-
-cartItems.addEventListener("click", showCartDetail);
-
-function showCartDetail() {
-  resume.innerHTML = "";
-  finalPrice.innerHTML = "";
-  if (cart.getPorductList().length === 0) {
-    resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
-  } else {
-    cart.getPorductList().forEach((product) => {
-      resume.innerHTML += `<li>${product.prodName} - $ ${product.prodPrice} x ${product.prodAmount} <button type="button" class="btn btn-danger removeItem" id="${product.prodId}">
-      &times;
-    </button></li>`;
-    });
-  }
-  finalPrice.innerHTML += `${cart.showResume()}`;
-}
-
-resume.addEventListener("click", (e) => {
-  if (e.target.classList.contains("removeItem")) {
-    cart.removeProduct(e.target.id);
-    showCartDetail();
-    cantProducts.innerHTML = cart.getTotalProducts();
-  }
-});
-
-btnLogin.addEventListener("click", loginUser);
-
-function loginUser() {
-  let userName = document.querySelector("#username").value;
-  let userPass = document.querySelector("#password").value;
-  if (userName === "" || userName === null || userName.length <= 3) {
-    toastr.error("El nombre ingresado es demasiado corto.");
-  } else if (userPass === "" || userPass === null) {
-    toastr.error("El campo password no puede quedar vacio.");
-  } else if (userPass.length < 6) {
-    toastr.error("El password debe tener 6 o mas caracteres.");
-  } else {
-    setUserInfo(userName, userPass);
-  }
-}
-
-function setUserInfo(name, pass) {
-  userInfo = new User(name, pass);
-  document.querySelector("#userNameLog").innerText = userInfo.getName();
-  document.querySelector("#userNameLog").hidden = false;
-  document.querySelector("#userInfo").hidden = true;
-  document.querySelector("#close-login").click();
-  toastr.success(`${userInfo.sayHello()}`);
-}
-
-function removeBgBadge(categorySelected) {
-  categories.forEach((category) => {
-    category.classList.remove("bg-dark");
-    category.classList.add("bg-secondary");
-  });
-  categorySelected.classList.add("bg-dark");
-}
-
-function updateFavorites() {
-  const favoritos = document.querySelectorAll(".favorito");
-  favoritos.forEach((favorito) => {
-    favorito.addEventListener("click", (e) => {
-      if (e.target.classList.contains("fa-star")) {
-        e.target.classList.remove("fa-star");
-        e.target.classList.add("fa-star-o");
-      } else {
-        e.target.classList.add("fa-star");
-        e.target.classList.remove("fa-star-o");
-      }
-    });
-  });
-}
-
-function cartButtons() {
-  const btns = document.querySelectorAll(".fa-cart-plus");
-  btns.forEach((btn) => {
-    btn.addEventListener(
-      "click",
-      (e) => {
-        // if (userInfo === undefined){
-        //   toastr.info('Debe ingresar antes de comenzar a comprar.')
-        //   document.querySelector("#userInfo").click();
-        // } else {
-        let item = cart.itemExists(parseInt(e.target.dataset.id));
-        if (!item) {
-          let productSelected = products.find(
-            (product) => product.id === parseInt(e.target.dataset.id)
-          );
-          cart.setProduct(
-            new Product(
-              productSelected.id,
-              productSelected.name,
-              productSelected.price
-            )
-          );
-          toastr.success("Se agrego un producto al carrito!");
-        } else {
-          item.setProductAmount();
-          toastr.success("Se agrego una unidad a un producto existente!");
-        }
-        cantProducts.innerHTML = cart.getTotalProducts();
-      }
-      // }
-    );
-  });
-}
 // Lista de productos
 const products = [
   {
@@ -313,7 +196,7 @@ const products = [
     offer: false,
     image: "7-notebook.jpg",
     category: "notebook",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 8,
@@ -323,7 +206,7 @@ const products = [
     offer: false,
     image: "8-notebook.jpg",
     category: "notebook",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 9,
@@ -383,7 +266,7 @@ const products = [
     offer: false,
     image: "2-pc.jpg",
     category: "pc",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 15,
@@ -564,7 +447,7 @@ const products = [
     offer: false,
     image: "9-celular.jpg",
     category: "celulares",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 33,
@@ -584,7 +467,7 @@ const products = [
     offer: false,
     image: "11-celular.jpg",
     category: "celulares",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 35,
@@ -644,7 +527,7 @@ const products = [
     offer: false,
     image: "5-tablet.jpg",
     category: "tablets",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 41,
@@ -794,7 +677,7 @@ const products = [
     offer: false,
     image: "8-monitor.jpg",
     category: "monitores",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 56,
@@ -814,7 +697,7 @@ const products = [
     offer: false,
     image: "10-monitor.jpg",
     category: "monitores",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 58,
@@ -874,7 +757,7 @@ const products = [
     offer: false,
     image: "4-accesorio.jpg",
     category: "accesorios",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 64,
@@ -894,7 +777,7 @@ const products = [
     offer: false,
     image: "6-accesorio.jpg",
     category: "accesorios",
-    outstanding: true,
+    outstanding: false,
   },
   {
     id: 66,
@@ -958,13 +841,156 @@ const products = [
   },
 ];
 
-// Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
-async function init() {
+productDetails.forEach((productDetailContainer) => {
+  productDetailContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("favorito")) updateFavorites(e.target);
+    if (e.target.classList.contains("fa-cart-plus")) cartButtons(e.target);
+    if (e.target.classList.contains("badge-category")) changeCategory(e.target);
+  });
+});
+
+cartItems.addEventListener("click", showCartDetail);
+
+resume.addEventListener("click", (e) => {
+  if (e.target.classList.contains("removeItem")) {
+    cart.removeProduct(e.target.id);
+    showCartDetail();
+    cantProducts.innerHTML = cart.getTotalProducts();
+  }
+});
+
+btnLogin.addEventListener("click", loginUser);
+
+function showCartDetail() {
+  resume.innerHTML = "";
+  finalPrice.innerHTML = "";
+  if (cart.getPorductList().length === 0) {
+    resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
+  } else {
+    cart.getPorductList().forEach((product) => {
+      resume.innerHTML += `<li>${product.prodName} - $ ${product.prodPrice} x ${product.prodAmount} <button type="button" class="btn btn-danger removeItem" id="${product.prodId}">
+      &times;
+    </button></li>`;
+    });
+  }
+  finalPrice.innerHTML += `${cart.showResume()}`;
+}
+
+function loginUser() {
+  let userName = document.querySelector("#username").value;
+  let userPass = document.querySelector("#password").value;
+  if (userName === "" || userName === null || userName.length <= 3) {
+    toastr.error("El nombre ingresado es demasiado corto.");
+  } else if (userPass === "" || userPass === null) {
+    toastr.error("El campo password no puede quedar vacio.");
+  } else if (userPass.length < 6) {
+    toastr.error("El password debe tener 6 o mas caracteres.");
+  } else {
+    setUserInfo(userName, userPass);
+  }
+}
+
+function setUserInfo(name, pass) {
+  userInfo = new User(name, pass);
+  document.querySelector("#userNameLog").innerText = userInfo.getName();
+  document.querySelector("#userNameLog").hidden = false;
+  document.querySelector("#userInfo").hidden = true;
+  document.querySelector("#close-login").click();
+  toastr.success(`${userInfo.sayHello()}`);
+}
+
+function changeCategory(element) {
+  if (element.dataset.category !== "all") {
+    removeBgBadge(element);
+    loadProducts(
+      getProductsByCategory(element.dataset.category),
+      productContainer,
+      2
+    );
+  } else {
+    removeBgBadge(element);
+    loadProducts(products, productContainer, 2);
+  }
+}
+
+function removeBgBadge(categorySelected) {
+  categories.forEach((category) => {
+    category.classList.remove("bg-dark");
+    category.classList.add("bg-secondary");
+  });
+  categorySelected.classList.remove("bg-secondary");
+  categorySelected.classList.add("bg-dark");
+}
+
+function updateFavorites(element) {
+  if (element.classList.contains("fa-star")) {
+    element.classList.remove("fa-star");
+    element.classList.add("fa-star-o");
+    favorites.forEach((product) => {
+      if (product.id == element.dataset.id) {
+        let index = favorites.indexOf(product);
+        favorites.splice(index, 1);
+      }
+    });
+  } else {
+    element.classList.add("fa-star");
+    element.classList.remove("fa-star-o");
+    let favoriteProduct = products.find(
+      (product) => product.id === parseInt(element.dataset.id)
+    );
+    favoriteProduct.outstanding = true;
+    favorites.push(favoriteProduct);
+  }
+  loadProducts(favorites, productFavoriteContainer);
+  setFavoritesIntoProduct()
+}
+
+function setFavoritesIntoProduct() {
+  products.forEach(product=>{
+    product.outstanding = false;
+    favorites.forEach(favorite=>{
+      if (product === favorite) {
+        product.outstanding = true;
+      }
+    })
+  })
+  let category = document.querySelector('.list-group-item h3 .bg-dark')
+  changeCategory(category)
   loadProducts(getProductsOffer(), productOfferContainer);
-  loadProducts(products, productContainer);
-  updateFavorites();
-  cartButtons();
-  // login();
+}
+
+function cartButtons(element) {
+  // if (userInfo === undefined){
+  //   toastr.info('Debe ingresar antes de comenzar a comprar.')
+  //   document.querySelector("#userInfo").click();
+  // } else {
+  let item = cart.itemExists(parseInt(element.dataset.id));
+  if (!item) {
+    let productSelected = products.find(
+      (product) => product.id === parseInt(element.dataset.id)
+    );
+    cart.setProduct(
+      new Product(
+        productSelected.id,
+        productSelected.name,
+        productSelected.price
+      )
+    );
+    toastr.success("Se agrego un producto al carrito!");
+  } else {
+    item.setProductAmount();
+    toastr.success("Se agrego una unidad a un producto existente!");
+  }
+  cantProducts.innerHTML = cart.getTotalProducts();
+}
+// }
+
+
+
+// Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
+function init() {
+  loadProducts(getProductsOffer(), productOfferContainer);
+  loadProducts(products, productContainer, 2);
 }
 
 function getProductsByCategory(category) {
@@ -980,13 +1006,11 @@ function getProductsFavorites() {
 }
 
 // Muestra productos en el DOM, segun el contenedor indicado.
-function loadProducts(products, container) {
-  if (container.children.length > 2) {
-    document
-      .querySelectorAll("#home_products-all .products")
-      .forEach((child) => {
-        container.removeChild(child);
-      });
+function loadProducts(products, container, minChilds = 1) {
+  if (container.children.length > minChilds) {
+    document.querySelectorAll(`#${container.id} .products`).forEach((child) => {
+      container.removeChild(child);
+    });
   }
   let name = "";
   for (let i = 0; i <= Math.round(products.length / 5); i++) {
@@ -999,7 +1023,9 @@ function loadProducts(products, container) {
             ? products[j].name.substring(0, 13) + "..."
             : (name = products[j].name);
         divContainer.innerHTML += `<div class="card card-product">
-    <i class="fa fa-star-o fa-2x favorito" aria-hidden="true"></i>
+    <i class="fa ${
+      products[j].outstanding ? "fa-star" : "fa-star-o"
+    } fa-2x favorito" aria-hidden="true" data-id="${products[j].id}"></i>
     <img
       src="assets/img/productos/${products[j].image}"
       class="card-img-top"
