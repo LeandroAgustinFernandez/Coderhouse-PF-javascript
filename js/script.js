@@ -1,3 +1,4 @@
+// CLASES
 class User {
   constructor(userName, userPassword) {
     this.name = userName;
@@ -28,8 +29,13 @@ class Cart {
     this.productList.push(product);
   }
 
-  removeProduct() {
-    // this.productList.pop(product);
+  removeProduct(id) {
+    this.productList.forEach((product) => {
+      if (product.prodId == id) {
+        let index = this.productList.indexOf(product);
+        this.productList.splice(index, 1);
+      }
+    });
   }
 
   getTotalProducts() {
@@ -37,10 +43,16 @@ class Cart {
   }
 
   getTotalPrice() {
+    this.total = 0;
     for (const product of this.productList) {
       this.total += product.getProductPrice() * product.getProductAmount();
     }
     this.applyDiscount();
+  }
+
+  itemExists(id) {
+    let item = this.getPorductList().find((product) => product.prodId === id);
+    return item;
   }
 
   applyDiscount() {
@@ -58,23 +70,11 @@ class Cart {
   }
 
   showResume() {
-    let productsDetail = "";
     this.getTotalPrice();
-    this.getPorductList().forEach((element) => {
-      productsDetail += `${element.prodName}
-      `;
-    });
-
-    alert(`
-      Resumen de compra de ${userInfo.getName()}:
-  
-      Cantidad de productos: ${this.getTotalProducts()}
-  
-      ${productsDetail}
-      Precio total: $${this.total}
-  
-      ${this.text}
-    `);
+    let resumePrice = `<h4 class="my-4">Total   $ ${this.total}</h4>
+    <h5 class="fst-italic">Por un total de ${this.getTotalProducts()} productos</h5>
+    <h5 class="fst-italic">${this.text}</h5>`;
+    return resumePrice;
   }
 }
 
@@ -107,25 +107,85 @@ class Product {
   }
 }
 
-// Variables Globales
+// VARIABLES GLOBALES
 let userInfo;
 let quantity = 0;
 let cart = new Cart();
 const productContainer = document.querySelector("#home_products-all");
 const productOfferContainer = document.querySelector("#home_products-offer");
 const categories = document.querySelectorAll(".badge-category");
+const cartItems = document.querySelector(".fa-shopping-cart");
+const resume = document.querySelector("#resume");
+const cantProducts = document.querySelector(".cart-contador");
+const finalPrice = document.querySelector("#offcanvas-footer");
+const btnLogin = document.querySelector("#btn-login");
+
 categories.forEach((category) => {
-    category.addEventListener("click", (e) => {
-      if (e.target.dataset.category !== "all") {
-        removeBgBadge(e.target);
-        loadProducts(getProductsByCategory(e.target.dataset.category),productContainer);
-      } else {
-        removeBgBadge(e.target);
-        loadProducts(products,productContainer);
-      }
-      updateFavorites()
-    });
+  category.addEventListener("click", (e) => {
+    if (e.target.dataset.category !== "all") {
+      removeBgBadge(e.target);
+      loadProducts(
+        getProductsByCategory(e.target.dataset.category),
+        productContainer
+      );
+    } else {
+      removeBgBadge(e.target);
+      loadProducts(products, productContainer);
+    }
+    updateFavorites();
+    cartButtons();
   });
+});
+
+cartItems.addEventListener("click", showCartDetail);
+
+function showCartDetail() {
+  resume.innerHTML = "";
+  finalPrice.innerHTML = "";
+  if (cart.getPorductList().length === 0) {
+    resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
+  } else {
+    cart.getPorductList().forEach((product) => {
+      resume.innerHTML += `<li>${product.prodName} - $ ${product.prodPrice} x ${product.prodAmount} <button type="button" class="btn btn-danger removeItem" id="${product.prodId}">
+      &times;
+    </button></li>`;
+    });
+  }
+  finalPrice.innerHTML += `${cart.showResume()}`;
+}
+
+resume.addEventListener("click", (e) => {
+  if (e.target.classList.contains("removeItem")) {
+    cart.removeProduct(e.target.id);
+    showCartDetail();
+    cantProducts.innerHTML = cart.getTotalProducts();
+  }
+});
+
+btnLogin.addEventListener("click", loginUser);
+
+function loginUser() {
+  let userName = document.querySelector("#username").value;
+  let userPass = document.querySelector("#password").value;
+  if (userName === "" || userName === null || userName.length <= 3) {
+    toastr.error("El nombre ingresado es demasiado corto.");
+  } else if (userPass === "" || userPass === null) {
+    toastr.error("El campo password no puede quedar vacio.");
+  } else if (userPass.length < 6) {
+    toastr.error("El password debe tener 6 o mas caracteres.");
+  } else {
+    setUserInfo(userName, userPass);
+  }
+}
+
+function setUserInfo(name, pass) {
+  userInfo = new User(name, pass);
+  document.querySelector("#userNameLog").innerText = userInfo.getName();
+  document.querySelector("#userNameLog").hidden = false;
+  document.querySelector("#userInfo").hidden = true;
+  document.querySelector("#close-login").click();
+  toastr.success(`${userInfo.sayHello()}`);
+}
 
 function removeBgBadge(categorySelected) {
   categories.forEach((category) => {
@@ -147,6 +207,40 @@ function updateFavorites() {
         e.target.classList.remove("fa-star-o");
       }
     });
+  });
+}
+
+function cartButtons() {
+  const btns = document.querySelectorAll(".fa-cart-plus");
+  btns.forEach((btn) => {
+    btn.addEventListener(
+      "click",
+      (e) => {
+        // if (userInfo === undefined){
+        //   toastr.info('Debe ingresar antes de comenzar a comprar.')
+        //   document.querySelector("#userInfo").click();
+        // } else {
+        let item = cart.itemExists(parseInt(e.target.dataset.id));
+        if (!item) {
+          let productSelected = products.find(
+            (product) => product.id === parseInt(e.target.dataset.id)
+          );
+          cart.setProduct(
+            new Product(
+              productSelected.id,
+              productSelected.name,
+              productSelected.price
+            )
+          );
+          toastr.success("Se agrego un producto al carrito!");
+        } else {
+          item.setProductAmount();
+          toastr.success("Se agrego una unidad a un producto existente!");
+        }
+        cantProducts.innerHTML = cart.getTotalProducts();
+      }
+      // }
+    );
   });
 }
 // Lista de productos
@@ -864,64 +958,14 @@ const products = [
   },
 ];
 
-// Solicita al usuario que ingrese su nombre y contraseña.
-function login() {
-  let userName = "";
-  let userPass = "";
-  while (userName === "") {
-    userName = prompt("Ingrese su nombre");
-    if (userName === "" || userName === null || userName.length <= 3) {
-      alert("El nombre ingresado es demasiado corto");
-      userName = "";
-    }
-  }
-  while (userPass === "") {
-    userPass = prompt("Ingrese su password");
-    if (userPass === "" || userPass === null) {
-      alert("El password ingresado es incorrecto");
-      userPass = "";
-    } else if (userPass.length < 6) {
-      alert("El password debe tener 6 o mas caracteres.");
-      userPass = "";
-    }
-  }
-  userInfo = new User(userName, userPass);
-  alert(userInfo.sayHello());
-}
-
 // Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
 async function init() {
   loadProducts(getProductsOffer(), productOfferContainer);
   loadProducts(products, productContainer);
-  updateFavorites()
+  updateFavorites();
+  cartButtons();
   // login();
 }
-
-// Solicita al usuario que ingrese un producto al carrito.
-// function askUserByProduct(categoryId) {
-//   let productsByCategory = getProductsByCategory(categoryId);
-//   let productsOption = "";
-//   let ids = [];
-//   productsByCategory.forEach((product) => {
-//     ids.push(product.id);
-//     productsOption += `${product.id} - ${product.name} - $${product.price} \n`;
-//   });
-//   let productId = parseInt(
-//     prompt(`Seleccione un producto: \n\n${productsOption} \n`)
-//   );
-//   while (!ids.includes(productId)) {
-//     alert("No es una opcion valida!");
-//     productId = parseInt(
-//       prompt(`Seleccione un producto: \n\n${productsOption} \n`)
-//     );
-//   }
-//   let productSelected = products.find((element) => element.id === productId);
-//   return new Product(
-//     productSelected.id,
-//     productSelected.name,
-//     productSelected.price
-//   );
-// }
 
 function getProductsByCategory(category) {
   return products.filter((product) => product.category === category);
@@ -966,15 +1010,17 @@ function loadProducts(products, container) {
       <div class="card-cart">
         ${
           products[j].offer
-            ? `<p class="card-price text-success fw-bold">$ ${new Intl.NumberFormat("de-DE").format(
-                products[j].price
-              )}</p>`
+            ? `<p class="card-price text-success fw-bold">$ ${new Intl.NumberFormat(
+                "de-DE"
+              ).format(products[j].price)}</p>`
             : `<p class="card-price">$ ${new Intl.NumberFormat("de-DE").format(
                 products[j].price
               )}</p>`
         }
         <span class="card-btn"
-          ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
+          ><i class="fa fa-cart-plus fa-1x" aria-hidden="true" data-id="${
+            products[j].id
+          }"></i
         ></span>
       </div>
     </div>
@@ -985,10 +1031,7 @@ function loadProducts(products, container) {
   }
 }
 
-
-
 // Ejecuta el programa
-window.addEventListener('load', ()=>{
+window.addEventListener("load", () => {
   init();
-})
-  
+});

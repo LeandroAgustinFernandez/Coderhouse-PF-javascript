@@ -538,3 +538,30 @@ body footer {
 .detalle .detalle-producto .card-detail:hover {
   box-shadow: 5px 5px 20px #666666;
 }
+
+.offcanvas .offcanvas-header #offcanvasRightLabel{
+  font-size: 2rem;
+}
+
+.offcanvas .offcanvas-body #resume{
+  font-size: 1.2rem;
+  list-style: none;
+  padding: 0.5rem;
+}
+.offcanvas .offcanvas-body #resume li{
+  margin-bottom: 1rem;
+}
+
+.offcanvas .offcanvas-footer {
+  
+}
+
+.toast {
+  font-size: 1.5rem;
+}
+
+#btn-login{
+  background-color: #00447A;
+  color: white;
+  padding: 1rem;
+}
