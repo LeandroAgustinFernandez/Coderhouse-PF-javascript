@@ -1022,7 +1022,7 @@ function loadProducts(products, container, minChilds = 1) {
           products[j].name.length >= 15
             ? products[j].name.substring(0, 13) + "..."
             : (name = products[j].name);
-        divContainer.innerHTML += `<div class="card card-product animate__animated animate__fadeIn wow">
+        divContainer.innerHTML += `<div class="card card-product wow">
     <i class="fa ${
       products[j].outstanding ? "fa-star" : "fa-star-o"
     } fa-2x favorito" aria-hidden="true" data-id="${products[j].id}"></i>
