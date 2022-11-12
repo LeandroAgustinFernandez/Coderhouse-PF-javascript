@@ -17,7 +17,11 @@
       integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="css/toastr.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link rel="stylesheet" href="css/toastr.min.css" />
     <link rel="stylesheet" href="css/style.css" />
     <title>Libre Comercio | Home</title>
   </head>
@@ -57,7 +61,15 @@
                 >
               </li>
               <li class="nav-item nav-item-mod">
-                <span class="nav-link" href="#" id="userInfo" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">Ingresar</span>
+                <span
+                  class="nav-link"
+                  href="#"
+                  id="userInfo"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasTop"
+                  aria-controls="offcanvasTop"
+                  >Ingresar</span
+                >
                 <span class="nav-link" hidden id="userNameLog"></span>
               </li>
             </ul>
@@ -164,45 +176,7 @@
           <p class="title">Ofertas</p>
         </article>
         <article class="home_products-details" id="home_products-favorite">
-          <p class="title">
-            Favoritos
-          </p>
-          <!-- <div class="products">
-            <div class="card card-product">
-              <i class="fa fa-star fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-            <div class="card card-product">
-              <i class="fa fa-star fa-2x favorito" aria-hidden="true"></i>
-              <img
-                src="assets/img/no-image-1024x1024.png"
-                class="card-img-top"
-                alt="product x"
-              />
-              <div class="card-body card-body-mod">
-                <p class="card-title-mod">Producto X</p>
-                <div class="card-cart">
-                  <p class="card-price">$ 12.345</p>
-                  <a href="#" class="card-btn"
-                    ><i class="fa fa-cart-plus fa-1x" aria-hidden="true"></i
-                  ></a>
-                </div>
-              </div>
-            </div>
-          </div> -->
+          <p class="title">Favoritos</p>
         </article>
         <article class="home_adds">
           <p class="title">Trabajamos con las mejores marcas</p>
@@ -368,30 +342,51 @@
       </div>
       <div class="offcanvas-body">
         <h4>Productos</h4>
-        <ul id="resume">
-          
-        </ul>
-        <div id="offcanvas-footer">
-
-        </div>
+        <ul id="resume"></ul>
+        <div id="offcanvas-footer"></div>
       </div>
     </div>
 
     <!-- LOGIN -->
-    <div class="offcanvas offcanvas-top" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+    <div
+      class="offcanvas offcanvas-top"
+      tabindex="-1"
+      id="offcanvasTop"
+      aria-labelledby="offcanvasTopLabel"
+    >
       <div class="offcanvas-header">
-        <h4 class="offcanvas-title m-auto" id="offcanvasTopLabel">Ingreso usuario</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" id="close-login"></button>
+        <h4 class="offcanvas-title m-auto" id="offcanvasTopLabel">
+          Ingreso usuario
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+          id="close-login"
+        ></button>
       </div>
       <div class="offcanvas-body mt-5">
         <form id="formuser">
           <div class="row g-3">
             <div class="col-md-4 col-sm-12 offset-md-4">
-              <input type="text" class="form-control form-control-lg mb-3" placeholder="Ingrese su nombre de usuario" id="username">
-              <input type="password" class="form-control form-control-lg" placeholder="Ingrese su contraseña" id="password">
+              <input
+                type="text"
+                class="form-control form-control-lg mb-3"
+                placeholder="Ingrese su nombre de usuario"
+                id="username"
+              />
+              <input
+                type="password"
+                class="form-control form-control-lg"
+                placeholder="Ingrese su contraseña"
+                id="password"
+              />
             </div>
-            <div class="col-md-4 col-sm-12  offset-md-4 mt-4">
-              <span class="btn btn-lg btn-info w-100" id="btn-login">Ingresar</span>
+            <div class="col-md-4 col-sm-12 offset-md-4 mt-4">
+              <span class="btn btn-lg btn-info w-100" id="btn-login"
+                >Ingresar</span
+              >
             </div>
           </div>
         </form>
@@ -404,7 +399,10 @@
     ></script>
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="js/toastr.min.js"></script>
-    
+    <script src="js/wow.min.js"></script>
+    <script>
+      new WOW().init();
+    </script>
     <script src="js/script.js"></script>
   </body>
 </html>
