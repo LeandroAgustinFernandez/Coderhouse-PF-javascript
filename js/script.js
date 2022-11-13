@@ -2,7 +2,7 @@
 class User {
   constructor(userName, userPassword) {
     this.name = userName;
-    this.userPassword = userPassword;
+    this.password = userPassword;
   }
 
   sayHello() {
@@ -11,6 +11,11 @@ class User {
 
   getName() {
     return this.name;
+  }
+
+  clearInfo() {
+    this.name = "";
+    this.password = "";
   }
 }
 
@@ -76,6 +81,10 @@ class Cart {
     <h5 class="fst-italic">${this.text}</h5>`;
     return resumePrice;
   }
+
+  clearList() {
+    this.productList.length = 0;
+  }
 }
 
 class Product {
@@ -109,7 +118,6 @@ class Product {
 
 // VARIABLES GLOBALES
 let userInfo;
-let quantity = 0;
 let cart = new Cart();
 
 const productContainer = document.querySelector("#home_products-all");
@@ -125,8 +133,9 @@ const finalPrice = document.querySelector("#offcanvas-footer");
 const btnLogin = document.querySelector("#btn-login");
 const productDetails = document.querySelectorAll(".home_products-details");
 const favorites = [];
+const logOutBtn = document.querySelector("#logOut");
 
-// Lista de productos
+// Lista de productoss
 const products = [
   {
     id: 1,
@@ -856,25 +865,17 @@ resume.addEventListener("click", (e) => {
     cart.removeProduct(e.target.id);
     showCartDetail();
     cantProducts.innerHTML = cart.getTotalProducts();
+    localStorage.setItem(
+      `cart-${userInfo.getName()}`,
+      JSON.stringify(cart.getPorductList())
+    );
+    toastr.warning("Se elimino el producto correctamente.");
   }
 });
 
 btnLogin.addEventListener("click", loginUser);
 
-function showCartDetail() {
-  resume.innerHTML = "";
-  finalPrice.innerHTML = "";
-  if (cart.getPorductList().length === 0) {
-    resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
-  } else {
-    cart.getPorductList().forEach((product) => {
-      resume.innerHTML += `<li>${product.prodName} - $ ${product.prodPrice} x ${product.prodAmount} <button type="button" class="btn btn-danger removeItem" id="${product.prodId}">
-      &times;
-    </button></li>`;
-    });
-  }
-  finalPrice.innerHTML += `${cart.showResume()}`;
-}
+logOutBtn.addEventListener("click", unsetUserInfo);
 
 function loginUser() {
   let userName = document.querySelector("#username").value;
@@ -896,7 +897,39 @@ function setUserInfo(name, pass) {
   document.querySelector("#userNameLog").hidden = false;
   document.querySelector("#userInfo").hidden = true;
   document.querySelector("#close-login").click();
+  logOutBtn.parentElement.hidden = false;
   toastr.success(`${userInfo.sayHello()}`);
+  localStorage.setItem("loguedUser", JSON.stringify(userInfo));
+  getProductsFavorites();
+  getCartProductStorage();
+}
+
+function unsetUserInfo() {
+  userInfo.clearInfo();
+  userInfo = undefined;
+  document.querySelector("#userNameLog").innerText = "";
+  document.querySelector("#userNameLog").hidden = true;
+  document.querySelector("#userInfo").hidden = false;
+  logOutBtn.parentElement.hidden = true;
+  toastr.info(`Se ha cerrado la sesión correctamente. Esperamos verte pronto!`);
+  localStorage.removeItem("loguedUser");
+  resetStatus();
+  init();
+}
+
+function showCartDetail() {
+  resume.innerHTML = "";
+  finalPrice.innerHTML = "";
+  if (cart.getPorductList().length === 0) {
+    resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
+  } else {
+    cart.getPorductList().forEach((product) => {
+      resume.innerHTML += `<li>${product.prodName} - $ ${product.prodPrice} x ${product.prodAmount} <button type="button" class="btn btn-danger removeItem" id="${product.prodId}">
+      &times;
+    </button></li>`;
+    });
+  }
+  finalPrice.innerHTML += `${cart.showResume()}`;
 }
 
 function changeCategory(element) {
@@ -923,74 +956,96 @@ function removeBgBadge(categorySelected) {
 }
 
 function updateFavorites(element) {
-  if (element.classList.contains("fa-star")) {
-    element.classList.remove("fa-star");
-    element.classList.add("fa-star-o");
-    favorites.forEach((product) => {
-      if (product.id == element.dataset.id) {
-        let index = favorites.indexOf(product);
-        favorites.splice(index, 1);
-      }
-    });
-  } else {
-    element.classList.add("fa-star");
-    element.classList.remove("fa-star-o");
-    let favoriteProduct = products.find(
-      (product) => product.id === parseInt(element.dataset.id)
+  if (userInfo === undefined) {
+    checkUserLogued(
+      "Debe ingresar para seleccionar sus productos como favoritos."
     );
-    favoriteProduct.outstanding = true;
-    favorites.push(favoriteProduct);
+  } else {
+    if (element.classList.contains("fa-star")) {
+      element.classList.remove("fa-star");
+      element.classList.add("fa-star-o");
+      favorites.forEach((product) => {
+        if (product.id == element.dataset.id) {
+          let index = favorites.indexOf(product);
+          favorites.splice(index, 1);
+        }
+      });
+      toastr.info(`Se elimino el producto de tu lista de favoritos.`);
+    } else {
+      element.classList.add("fa-star");
+      element.classList.remove("fa-star-o");
+      let favoriteProduct = products.find(
+        (product) => product.id === parseInt(element.dataset.id)
+      );
+      favoriteProduct.outstanding = true;
+      favorites.push(favoriteProduct);
+      toastr.success(`Se agrego el producto a tu lista de favoritos!`);
+    }
+    setFavoritesIntoProduct();
+    localStorage.setItem(
+      `favorites-${userInfo.getName()}`,
+      JSON.stringify(favorites)
+    );
   }
-  loadProducts(favorites, productFavoriteContainer);
-  setFavoritesIntoProduct()
 }
 
 function setFavoritesIntoProduct() {
-  products.forEach(product=>{
+  products.forEach((product) => {
     product.outstanding = false;
-    favorites.forEach(favorite=>{
-      if (product === favorite) {
-        product.outstanding = true;
-      }
-    })
-  })
-  let category = document.querySelector('.list-group-item h3 .bg-dark')
-  changeCategory(category)
+    favorites.forEach((favorite) => {
+      if (product.id === favorite.id) product.outstanding = true;
+    });
+  });
+  let category = document.querySelector(".list-group-item h3 .bg-dark");
+  changeCategory(category);
   loadProducts(getProductsOffer(), productOfferContainer);
+  loadProducts(favorites, productFavoriteContainer);
 }
 
 function cartButtons(element) {
-  // if (userInfo === undefined){
-  //   toastr.info('Debe ingresar antes de comenzar a comprar.')
-  //   document.querySelector("#userInfo").click();
-  // } else {
-  let item = cart.itemExists(parseInt(element.dataset.id));
-  if (!item) {
-    let productSelected = products.find(
-      (product) => product.id === parseInt(element.dataset.id)
-    );
-    cart.setProduct(
-      new Product(
-        productSelected.id,
-        productSelected.name,
-        productSelected.price
-      )
-    );
-    toastr.success("Se agrego un producto al carrito!");
+  if (userInfo === undefined) {
+    checkUserLogued("Debe ingresar antes de comenzar a comprar");
   } else {
-    item.setProductAmount();
-    toastr.success("Se agrego una unidad a un producto existente!");
+    let item = cart.itemExists(parseInt(element.dataset.id));
+    if (!item) {
+      let productSelected = products.find(
+        (product) => product.id === parseInt(element.dataset.id)
+      );
+      cart.setProduct(
+        new Product(
+          productSelected.id,
+          productSelected.name,
+          productSelected.price
+        )
+      );
+      toastr.success("Se agrego un producto al carrito!");
+    } else {
+      item.setProductAmount();
+      toastr.success("Se agrego una unidad a un producto existente!");
+    }
+    localStorage.setItem(
+      `cart-${userInfo.getName()}`,
+      JSON.stringify(cart.getPorductList())
+    );
+    cantProducts.innerHTML = cart.getTotalProducts();
   }
-  cantProducts.innerHTML = cart.getTotalProducts();
 }
-// }
 
-
+function checkUserLogued(msg) {
+  toastr.info(msg);
+  document.querySelector("#userInfo").click();
+}
 
 // Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
 function init() {
-  loadProducts(getProductsOffer(), productOfferContainer);
-  loadProducts(products, productContainer, 2);
+  userIsLogued();
+  if (userInfo !== undefined) {
+    getCartProductStorage();
+    getProductsFavorites();
+  } else {
+    loadProducts(getProductsOffer(), productOfferContainer);
+    loadProducts(products, productContainer, 2);
+  }
 }
 
 function getProductsByCategory(category) {
@@ -999,10 +1054,6 @@ function getProductsByCategory(category) {
 
 function getProductsOffer() {
   return products.filter((product) => product.offer === true);
-}
-
-function getProductsFavorites() {
-  // TODO:
 }
 
 // Muestra productos en el DOM, segun el contenedor indicado.
@@ -1022,41 +1073,83 @@ function loadProducts(products, container, minChilds = 1) {
           products[j].name.length >= 15
             ? products[j].name.substring(0, 13) + "..."
             : (name = products[j].name);
-        divContainer.innerHTML += `<div class="card card-product wow">
-    <i class="fa ${
-      products[j].outstanding ? "fa-star" : "fa-star-o"
-    } fa-2x favorito" aria-hidden="true" data-id="${products[j].id}"></i>
-    <img
-      src="assets/img/productos/${products[j].image}"
-      class="card-img-top"
-      alt="${products[j].name}"
-    />
-    <div class="card-body card-body-mod">
-      <p class="card-title-mod">${name}</p>
-      <div class="card-cart">
-        ${
-          products[j].offer
-            ? `<p class="card-price text-success fw-bold">$ ${new Intl.NumberFormat(
-                "de-DE"
-              ).format(products[j].price)}</p>`
-            : `<p class="card-price">$ ${new Intl.NumberFormat("de-DE").format(
-                products[j].price
-              )}</p>`
-        }
-        <span class="card-btn"
-          ><i class="fa fa-cart-plus fa-1x" aria-hidden="true" data-id="${
-            products[j].id
-          }"></i
-        ></span>
-      </div>
-    </div>
-    </div>`;
+        divContainer.innerHTML += `<div class="card card-product">
+          <i class="fa ${
+            products[j].outstanding ? "fa-star" : "fa-star-o"
+          } fa-2x favorito" aria-hidden="true" data-id="${products[j].id}"></i>
+          <img
+            src="assets/img/productos/${products[j].image}"
+            class="card-img-top"
+            alt="${products[j].name}"
+          />
+          <div class="card-body card-body-mod">
+            <p class="card-title-mod">${name}</p>
+            <div class="card-cart">
+              ${
+                products[j].offer
+                  ? `<p class="card-price text-success fw-bold">$ ${new Intl.NumberFormat(
+                      "de-DE"
+                    ).format(products[j].price)}</p>`
+                  : `<p class="card-price">$ ${new Intl.NumberFormat(
+                      "de-DE"
+                    ).format(products[j].price)}</p>`
+              }
+              <span class="card-btn"
+                ><i class="fa fa-cart-plus fa-1x" aria-hidden="true" data-id="${
+                  products[j].id
+                }"></i
+              ></span>
+            </div>
+          </div>
+          </div>`;
       }
     }
     container.appendChild(divContainer);
   }
 }
 
+function userIsLogued() {
+  if (localStorage.loguedUser != undefined) {
+    let user = JSON.parse(localStorage.getItem("loguedUser"));
+    setUserInfo(user.name, user.password);
+  }
+}
+
+function getProductsFavorites() {
+  if (
+    localStorage.loguedUser !== undefined &&
+    localStorage[`favorites-${userInfo.getName()}`] !== undefined
+  ) {
+    favorites.length = 0;
+    let items = JSON.parse(
+      localStorage.getItem(`favorites-${userInfo.getName()}`)
+    );
+    items.forEach((item) => favorites.push(item));
+  }
+  setFavoritesIntoProduct();
+}
+
+function getCartProductStorage() {
+  if (
+    localStorage.loguedUser !== undefined &&
+    localStorage[`cart-${userInfo.getName()}`] !== undefined
+  ) {
+    cart.clearList()
+    let items = JSON.parse(localStorage.getItem(`cart-${userInfo.getName()}`));
+    items.forEach((item) => {
+      cart.setProduct(new Product(item.prodId, item.prodName, item.prodPrice));
+      cantProducts.innerHTML = cart.getTotalProducts();
+    });
+  }
+}
+
+function resetStatus() {
+  favorites.length = 0;
+  setFavoritesIntoProduct()
+  cart.clearList();
+  cantProducts.innerHTML = cart.getTotalProducts();
+  productFavoriteContainer.innerHTML = `<p class="title">Favoritos</p>`;
+}
 // Ejecuta el programa
 window.addEventListener("load", () => {
   init();
