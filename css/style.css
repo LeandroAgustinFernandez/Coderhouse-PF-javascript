@@ -544,17 +544,13 @@ body footer {
 }
 
 .offcanvas .offcanvas-body #resume{
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   list-style: none;
   padding: 0.5rem;
 }
 .offcanvas .offcanvas-body #resume li{
   margin-bottom: 1rem;
 }
-
-/* .offcanvas .offcanvas-footer {
-  
-} */
 
 .toast {
   font-size: 1.5rem;
@@ -565,3 +561,8 @@ body footer {
   color: white;
   padding: 1rem;
 }
+
+.modal{
+  font-size: 1.4rem;
+}
+

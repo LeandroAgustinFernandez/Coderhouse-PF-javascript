@@ -1,120 +1,4 @@
 // CLASES
-class User {
-  constructor(userName, userPassword) {
-    this.name = userName;
-    this.password = userPassword;
-  }
-
-  sayHello() {
-    return `Bienvenido ${this.name}!`;
-  }
-
-  getName() {
-    return this.name;
-  }
-
-  clearInfo() {
-    this.name = "";
-    this.password = "";
-  }
-}
-
-class Cart {
-  constructor() {
-    this.productList = [];
-    this.total = 0;
-    this.text = "No se aplicaron descuentos";
-  }
-
-  getPorductList() {
-    return this.productList;
-  }
-
-  setProduct(product) {
-    this.productList.push(product);
-  }
-
-  removeProduct(id) {
-    this.productList.forEach((product) => {
-      if (product.prodId == id) {
-        let index = this.productList.indexOf(product);
-        this.productList.splice(index, 1);
-      }
-    });
-  }
-
-  getTotalProducts() {
-    return this.productList.length;
-  }
-
-  getTotalPrice() {
-    this.total = 0;
-    for (const product of this.productList) {
-      this.total += product.getProductPrice() * product.getProductAmount();
-    }
-    this.applyDiscount();
-  }
-
-  itemExists(id) {
-    let item = this.getPorductList().find((product) => product.prodId === id);
-    return item;
-  }
-
-  applyDiscount() {
-    let quantity = this.getTotalProducts();
-    if (quantity === 3) {
-      this.total -= this.total * 0.1;
-      this.text = `Se aplico un descuento del 10%`;
-    } else if (quantity === 4) {
-      this.total -= this.total * 0.15;
-      this.text = `Se aplico un descuento del 15%`;
-    } else if (quantity >= 5) {
-      this.total -= this.total * 0.2;
-      this.text = `Se aplico un descuento del 20%`;
-    }
-  }
-
-  showResume() {
-    this.getTotalPrice();
-    let resumePrice = `<h4 class="my-4">Total   $ ${this.total}</h4>
-    <h5 class="fst-italic">Por un total de ${this.getTotalProducts()} productos</h5>
-    <h5 class="fst-italic">${this.text}</h5>`;
-    return resumePrice;
-  }
-
-  clearList() {
-    this.productList.length = 0;
-  }
-}
-
-class Product {
-  constructor(prodId, prodName, prodPrice,prodAmount = 1) {
-    this.prodId = prodId;
-    this.prodName = prodName;
-    this.prodPrice = prodPrice;
-    this.prodAmount = prodAmount;
-  }
-
-  getProductId() {
-    return this.prodId;
-  }
-
-  getProductName() {
-    return this.prodName;
-  }
-
-  getProductPrice() {
-    return this.prodPrice;
-  }
-
-  getProductAmount() {
-    return this.prodAmount;
-  }
-
-  setProductAmount(mod = 'inc') {
-    ( mod === 'inc') ? this.prodAmount++ : this.prodAmount--; 
-  }
-}
 
 // VARIABLES GLOBALES
 let userInfo;
@@ -134,7 +18,7 @@ const btnLogin = document.querySelector("#btn-login");
 const productDetails = document.querySelectorAll(".home_products-details");
 const favorites = [];
 const logOutBtn = document.querySelector("#logOut");
-
+const closePayment = document.querySelector("#paymentEnd");
 // Lista de productoss
 const products = [
   {
@@ -850,41 +734,31 @@ const products = [
   },
 ];
 
+// LISTENERS
 productDetails.forEach((productDetailContainer) => {
   productDetailContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("favorito")) updateFavorites(e.target);
-    if (e.target.classList.contains("fa-cart-plus")) cartButtons(e.target);
-    if (e.target.classList.contains("badge-category")) changeCategory(e.target);
+    e.target.classList.contains("favorito") && updateFavorites(e.target);
+    e.target.classList.contains("fa-cart-plus") && cartButtons(e.target);
+    e.target.classList.contains("badge-category") && changeCategory(e.target);
   });
 });
 
 cartItems.addEventListener("click", showCartDetail);
 
 resume.addEventListener("click", (e) => {
-  if (e.target.classList.contains("removeItem")) {
-    cart.removeProduct(e.target.id);
-    showCartDetail();
-    cantProducts.innerHTML = cart.getTotalProducts();
-    localStorage.setItem(
-      `cart-${userInfo.getName()}`,
-      JSON.stringify(cart.getPorductList())
-    );
-    toastr.warning("Se elimino el producto correctamente.");
-  }
-  if (e.target.classList.contains('modAmount')) {
-    let product = cart.itemExists(parseInt(e.target.dataset.id))
-    product.setProductAmount(e.target.dataset.change);
-    showCartDetail();
-    localStorage.setItem(
-      `cart-${userInfo.getName()}`,
-      JSON.stringify(cart.getPorductList())
-    );
-  }
+  e.target.classList.contains("removeItem") && removeItemFromCart(e);
+  e.target.classList.contains("modAmount") && changeProductAmount(e);
 });
 
 btnLogin.addEventListener("click", loginUser);
 
 logOutBtn.addEventListener("click", unsetUserInfo);
+
+finalPrice.addEventListener("click", (e) => {
+  e.target.classList.contains("closeCart") && loadPaymentDetail();
+});
+
+closePayment.addEventListener("click", closeUserPayment);
 
 function loginUser() {
   let userName = document.querySelector("#username").value;
@@ -902,13 +776,10 @@ function loginUser() {
 
 function setUserInfo(name, pass) {
   userInfo = new User(name, pass);
-  document.querySelector("#userNameLog").innerText = userInfo.getName();
-  document.querySelector("#userNameLog").hidden = false;
-  document.querySelector("#userInfo").hidden = true;
-  logOutBtn.parentElement.hidden = false;
-  document.querySelector("#close-login").click();
+  loadUserInfoDOM(userInfo.getName(), false);
   toastr.success(`${userInfo.sayHello()}`);
-  localStorage.setItem("loguedUser", JSON.stringify(userInfo));
+  clickForModals("#close-login");
+  saveLocalStorage("loguedUser", JSON.stringify(userInfo));
   getProductsFavorites();
   getCartProductStorage();
 }
@@ -916,23 +787,23 @@ function setUserInfo(name, pass) {
 function unsetUserInfo() {
   userInfo.clearInfo();
   userInfo = undefined;
-  document.querySelector("#userNameLog").innerText = "";
-  document.querySelector("#userNameLog").hidden = true;
-  document.querySelector("#userInfo").hidden = false;
-  logOutBtn.parentElement.hidden = true;
+  loadUserInfoDOM("", true);
   toastr.info(`Se ha cerrado la sesión correctamente. Esperamos verte pronto!`);
   localStorage.removeItem("loguedUser");
   resetStatus();
   init();
 }
 
-// Muestra productos en el DOM, segun el contenedor indicado.
+function loadUserInfoDOM(name, nameHide) {
+  document.querySelector("#userNameLog").innerText = name;
+  document.querySelector("#userNameLog").hidden = nameHide;
+  document.querySelector("#userLogin").hidden = !nameHide;
+  logOutBtn.parentElement.hidden = nameHide;
+}
+
+// MUESTRA PRODUCTOS EN EL DOM SEGUN LOS PRODUCTOS Y CONTENEDOR INDICADO
 function loadProducts(products, container, minChilds = 1) {
-  if (container.children.length > minChilds) {
-    document.querySelectorAll(`#${container.id} .products`).forEach((child) => {
-      container.removeChild(child);
-    });
-  }
+  clearContainer(container, minChilds);
   for (let i = 0; i <= Math.round(products.length / 5); i++) {
     let divContainer = document.createElement("div");
     divContainer.classList = "products";
@@ -945,11 +816,18 @@ function loadProducts(products, container, minChilds = 1) {
   }
 }
 
+function clearContainer(container, minChilds) {
+  if (container.children.length > minChilds) {
+    document.querySelectorAll(`#${container.id} .products`).forEach((child) => {
+      container.removeChild(child);
+    });
+  }
+}
+
+// TEMPLATE CARD DE PRODUCTO
 function productCard(product) {
-  let name =
-    product.name.length >= 15
-      ? product.name.substring(0, 13) + "..."
-      : product.name;
+  const { id, name, image, price, outstanding, offer } = product;
+  let nameTemp = name.length >= 15 ? name.substring(0, 13) + "..." : name;
   let divCard = document.createElement("div");
   let i = document.createElement("i");
   let img = document.createElement("img");
@@ -963,27 +841,25 @@ function productCard(product) {
   divCard.setAttribute("class", "card card-product");
   i.setAttribute(
     "class",
-    `fa ${product.outstanding ? "fa-star" : "fa-star-o"} fa-2x favorito`
+    `fa ${outstanding ? "fa-star" : "fa-star-o"} fa-2x favorito`
   );
-  i.dataset.id = `${product.id}`;
+  i.dataset.id = `${id}`;
   i.ariaHidden = true;
-  img.src = `./assets/img/productos/${product.image}`;
+  img.src = `./assets/img/productos/${image}`;
   img.classList.add("card-img-top");
-  img.alt = `${product.name}`;
+  img.alt = `${name}`;
   divBody.setAttribute("class", "card-body card-body-mod");
   pTitle.classList.add("card-title-mod");
-  pTitle.innerText = name;
+  pTitle.innerText = nameTemp;
   divCart.classList.add("card-cart");
-  product.offer
+  offer
     ? pPrice.setAttribute("class", "card-price text-success fw-bold")
     : pPrice.setAttribute("class", "card-price");
-  pPrice.innerText = `$ ${new Intl.NumberFormat("de-DE").format(
-    product.price
-  )}`;
+  pPrice.innerText = `$ ${new Intl.NumberFormat("de-DE").format(price)}`;
   span.classList.add("card-btn");
   ibtn.setAttribute("class", "fa fa-cart-plus fa-1x");
   ibtn.ariaHidden = true;
-  ibtn.dataset.id = `${product.id}`;
+  ibtn.dataset.id = `${id}`;
 
   span.append(ibtn);
   divCart.append(pPrice);
@@ -996,7 +872,7 @@ function productCard(product) {
 
   return divCard;
 }
-
+// RETORNA EL DETALLE DE COMPRA EN EL DOM
 function showCartDetail() {
   resume.innerHTML = "";
   finalPrice.innerHTML = "";
@@ -1004,63 +880,93 @@ function showCartDetail() {
     resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
   } else {
     cart.getPorductList().forEach((product) => {
-      resume.append(productInCart(product))
+      resume.append(productInCart(product));
     });
   }
-  finalPrice.innerHTML += `${cart.showResume()}`;
+
+  finalPrice.innerHTML += `${showResumenCart(cart.showResume())}`;
+  finalPrice.innerHTML += `<button class="btn btn-info mt-3 closeCart" ${
+    cart.getTotalProducts() === 0 ? "hidden" : ""
+  }>Finalizar Compra</button>`;
+}
+// TEMPLATE RESUMEN
+function showResumenCart({ total, cant, text }) {
+  return `<h4 class="my-4">Total   $ ${total}</h4>
+  <h5 class="fst-italic">Por un total de ${cant} productos</h5>
+  <h5 class="fst-italic">${text}</h5>`;
 }
 
+// TEMPLATE LIST-ITEM RESUMEN DE COMPRA
 function productInCart(product) {
-  let li = document.createElement('li')
-  let h5Title = document.createElement('h5')
-  let btnRemove = document.createElement('button')
-  let h5Price= document.createElement('h5')
-  let div = document.createElement('div')
-  let btnDecrement = document.createElement('button')
-  let span = document.createElement('span')
-  let btnIncrement = document.createElement('button')
+  const { prodName, prodId, prodPrice, prodAmount } = product;
+  let li = document.createElement("li");
+  let h5Title = document.createElement("h5");
+  let btnRemove = document.createElement("button");
+  let h5Price = document.createElement("h5");
+  let div = document.createElement("div");
+  let btnDecrement = document.createElement("button");
+  let span = document.createElement("span");
+  let btnIncrement = document.createElement("button");
 
-  h5Title.setAttribute('class',"d-flex justify-content-between")
-  h5Title.innerText = `${product.prodName}`
-  btnRemove.setAttribute('class',"btn btn-danger removeItem")
-  btnRemove.id = `${product.prodId}`
-  btnRemove.innerHTML = "&times;"
-  h5Price.innerText = `$ ${product.prodPrice}`
-  btnDecrement.setAttribute('class',"btn btn-info modAmount")
-  btnDecrement.dataset.change = `dec`
-  btnDecrement.innerText = `-`
-  btnDecrement.dataset.id = `${product.prodId}`
-  btnDecrement.disabled = (product.prodAmount === 1)
-  btnIncrement.setAttribute('class',"btn btn-info modAmount")
-  btnIncrement.dataset.change = `inc`
-  btnIncrement.innerText = `+`
-  btnIncrement.dataset.id = `${product.prodId}`
-  span.classList.add('px-3')
-  span.innerText = `${product.prodAmount}`
+  h5Title.setAttribute("class", "d-flex justify-content-between");
+  h5Title.innerText = `${prodName}`;
+  btnRemove.setAttribute("class", "btn btn-danger removeItem");
+  btnRemove.id = `${prodId}`;
+  btnRemove.innerHTML = "&times;";
+  h5Price.innerText = `$ ${prodPrice}`;
+  btnDecrement.setAttribute("class", "btn btn-info modAmount");
+  btnDecrement.dataset.change = `dec`;
+  btnDecrement.innerText = `-`;
+  btnDecrement.dataset.id = `${prodId}`;
+  btnDecrement.disabled = prodAmount === 1;
+  btnIncrement.setAttribute("class", "btn btn-info modAmount");
+  btnIncrement.dataset.change = `inc`;
+  btnIncrement.innerText = `+`;
+  btnIncrement.dataset.id = `${prodId}`;
+  span.classList.add("px-3");
+  span.innerText = `${prodAmount}`;
 
-  h5Title.append(btnRemove)
-  div.append(btnDecrement)
-  div.append(span)
-  div.append(btnIncrement)
-  li.append(h5Title)
-  li.append(h5Price)
-  li.append(div)
+  h5Title.append(btnRemove);
+  div.append(btnDecrement);
+  div.append(span);
+  div.append(btnIncrement);
+  li.append(h5Title);
+  li.append(h5Price);
+  li.append(div);
 
   return li;
 }
 
+function removeItemFromCart(e) {
+  cart.removeProduct(e.target.id);
+  showCartDetail();
+  cantProducts.innerHTML = cart.getTotalProducts();
+  saveLocalStorage(
+    `cart-${userInfo.getName()}`,
+    JSON.stringify(cart.getPorductList())
+  );
+  toastr.warning("Se elimino el producto correctamente.");
+}
+
+function changeProductAmount(e) {
+  let product = cart.itemExists(parseInt(e.target.dataset.id));
+  product.setProductAmount(e.target.dataset.change);
+  showCartDetail();
+  saveLocalStorage(
+    `cart-${userInfo.getName()}`,
+    JSON.stringify(cart.getPorductList())
+  );
+}
+
 function changeCategory(element) {
-  if (element.dataset.category !== "all") {
-    removeBgBadge(element);
-    loadProducts(
-      getProductsByCategory(element.dataset.category),
-      productContainer,
-      2
-    );
-  } else {
-    removeBgBadge(element);
-    loadProducts(products, productContainer, 2);
-  }
+  removeBgBadge(element);
+  element.dataset.category !== "all"
+    ? loadProducts(
+        getProductsByCategory(element.dataset.category),
+        productContainer,
+        2
+      )
+    : loadProducts(products, productContainer, 2);
 }
 
 function removeBgBadge(categorySelected) {
@@ -1099,7 +1005,7 @@ function updateFavorites(element) {
       toastr.success(`Se agrego el producto a tu lista de favoritos!`);
     }
     setFavoritesIntoProduct();
-    localStorage.setItem(
+    saveLocalStorage(
       `favorites-${userInfo.getName()}`,
       JSON.stringify(favorites)
     );
@@ -1120,27 +1026,22 @@ function setFavoritesIntoProduct() {
 }
 
 function cartButtons(element) {
-  if (userInfo === undefined) {
+  if (!userInfo) {
     checkUserLogued("Debe ingresar antes de comenzar a comprar");
   } else {
-    let item = cart.itemExists(parseInt(element.dataset.id));
+    let idCard = parseInt(element.dataset.id);
+    let item = cart.itemExists(idCard);
     if (!item) {
-      let productSelected = products.find(
-        (product) => product.id === parseInt(element.dataset.id)
+      let { id, name, price } = products.find(
+        (product) => product.id === idCard
       );
-      cart.setProduct(
-        new Product(
-          productSelected.id,
-          productSelected.name,
-          productSelected.price
-        )
-      );
+      cart.setProduct(new Product(id, name, price));
       toastr.success("Se agrego un producto al carrito!");
     } else {
       item.setProductAmount();
       toastr.success("Se agrego una unidad a un producto existente!");
     }
-    localStorage.setItem(
+    saveLocalStorage(
       `cart-${userInfo.getName()}`,
       JSON.stringify(cart.getPorductList())
     );
@@ -1150,7 +1051,45 @@ function cartButtons(element) {
 
 function checkUserLogued(msg) {
   toastr.info(msg);
-  document.querySelector("#userInfo").click();
+  clickForModals("#userLogin");
+}
+
+// MUESTRA LA INFORMACION DEL CART EN EL MODAL DEL DOM.
+function loadPaymentDetail() {
+  document.querySelector(
+    "#paymentUser"
+  ).innerText = `Usuario: ${userInfo.getName()}`;
+  let products = cart.getPorductList();
+  let tBody = document.querySelector("#tableBody");
+  tBody.innerHTML = "";
+  products.forEach(({ prodName, prodAmount, prodPrice }) => {
+    let tr = document.createElement("tr");
+    let tdTitle = document.createElement("td");
+    tdTitle.innerText = `${prodName}`;
+    let tdPrice = document.createElement("td");
+    tdPrice.innerText = `$ ${new Intl.NumberFormat("de-DE").format(prodPrice)}`;
+    let tdAmount = document.createElement("td");
+    tdAmount.innerText = `${prodAmount}`;
+    tr.append(tdTitle);
+    tr.append(tdPrice);
+    tr.append(tdAmount);
+    tBody.append(tr);
+  });
+  document.querySelector("#paymentTotal").innerHTML = `${showResumenCart(
+    cart.showResume()
+  )}`;
+  clickForModals("#closeOffcanvasProducts");
+  clickForModals("#openModal");
+}
+
+function closeUserPayment() {
+  clickForModals("#openModal");
+  cart.clearList();
+  cantProducts.innerHTML = cart.getTotalProducts();
+  localStorage.removeItem(`cart-${userInfo.getName()}`);
+  toastr.success(
+    `${userInfo.getName()} finalizaste la compra exitosamente! Gracias! Esperamos verte de nuevo!`
+  );
 }
 
 // Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
@@ -1203,10 +1142,25 @@ function getCartProductStorage() {
     cart.clearList();
     let items = JSON.parse(localStorage.getItem(`cart-${userInfo.getName()}`));
     items.forEach((item) => {
-      cart.setProduct(new Product(item.prodId, item.prodName, item.prodPrice, item.prodAmount));
+      cart.setProduct(
+        new Product(
+          item.prodId,
+          item.prodName,
+          parseInt(item.prodPrice),
+          item.prodAmount
+        )
+      );
       cantProducts.innerHTML = cart.getTotalProducts();
     });
   }
+}
+
+function saveLocalStorage(clave, valor) {
+  localStorage.setItem(clave, valor);
+}
+
+function clickForModals(id) {
+  document.querySelector(id).click();
 }
 
 function resetStatus() {
