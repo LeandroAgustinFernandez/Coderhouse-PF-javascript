@@ -88,11 +88,11 @@ class Cart {
 }
 
 class Product {
-  constructor(prodId, prodName, prodPrice) {
+  constructor(prodId, prodName, prodPrice,prodAmount = 1) {
     this.prodId = prodId;
     this.prodName = prodName;
     this.prodPrice = prodPrice;
-    this.prodAmount = 1;
+    this.prodAmount = prodAmount;
   }
 
   getProductId() {
@@ -111,8 +111,8 @@ class Product {
     return this.prodAmount;
   }
 
-  setProductAmount() {
-    this.prodAmount++;
+  setProductAmount(mod = 'inc') {
+    ( mod === 'inc') ? this.prodAmount++ : this.prodAmount--; 
   }
 }
 
@@ -871,6 +871,15 @@ resume.addEventListener("click", (e) => {
     );
     toastr.warning("Se elimino el producto correctamente.");
   }
+  if (e.target.classList.contains('modAmount')) {
+    let product = cart.itemExists(parseInt(e.target.dataset.id))
+    product.setProductAmount(e.target.dataset.change);
+    showCartDetail();
+    localStorage.setItem(
+      `cart-${userInfo.getName()}`,
+      JSON.stringify(cart.getPorductList())
+    );
+  }
 });
 
 btnLogin.addEventListener("click", loginUser);
@@ -896,8 +905,8 @@ function setUserInfo(name, pass) {
   document.querySelector("#userNameLog").innerText = userInfo.getName();
   document.querySelector("#userNameLog").hidden = false;
   document.querySelector("#userInfo").hidden = true;
-  document.querySelector("#close-login").click();
   logOutBtn.parentElement.hidden = false;
+  document.querySelector("#close-login").click();
   toastr.success(`${userInfo.sayHello()}`);
   localStorage.setItem("loguedUser", JSON.stringify(userInfo));
   getProductsFavorites();
@@ -917,6 +926,77 @@ function unsetUserInfo() {
   init();
 }
 
+// Muestra productos en el DOM, segun el contenedor indicado.
+function loadProducts(products, container, minChilds = 1) {
+  if (container.children.length > minChilds) {
+    document.querySelectorAll(`#${container.id} .products`).forEach((child) => {
+      container.removeChild(child);
+    });
+  }
+  for (let i = 0; i <= Math.round(products.length / 5); i++) {
+    let divContainer = document.createElement("div");
+    divContainer.classList = "products";
+    for (let j = i * 5; j < (i + 1) * 5; j++) {
+      if (products[j]) {
+        divContainer.append(productCard(products[j]));
+      }
+    }
+    container.appendChild(divContainer);
+  }
+}
+
+function productCard(product) {
+  let name =
+    product.name.length >= 15
+      ? product.name.substring(0, 13) + "..."
+      : product.name;
+  let divCard = document.createElement("div");
+  let i = document.createElement("i");
+  let img = document.createElement("img");
+  let divBody = document.createElement("div");
+  let pTitle = document.createElement("p");
+  let divCart = document.createElement("div");
+  let pPrice = document.createElement("p");
+  let span = document.createElement("span");
+  let ibtn = document.createElement("i");
+
+  divCard.setAttribute("class", "card card-product");
+  i.setAttribute(
+    "class",
+    `fa ${product.outstanding ? "fa-star" : "fa-star-o"} fa-2x favorito`
+  );
+  i.dataset.id = `${product.id}`;
+  i.ariaHidden = true;
+  img.src = `./assets/img/productos/${product.image}`;
+  img.classList.add("card-img-top");
+  img.alt = `${product.name}`;
+  divBody.setAttribute("class", "card-body card-body-mod");
+  pTitle.classList.add("card-title-mod");
+  pTitle.innerText = name;
+  divCart.classList.add("card-cart");
+  product.offer
+    ? pPrice.setAttribute("class", "card-price text-success fw-bold")
+    : pPrice.setAttribute("class", "card-price");
+  pPrice.innerText = `$ ${new Intl.NumberFormat("de-DE").format(
+    product.price
+  )}`;
+  span.classList.add("card-btn");
+  ibtn.setAttribute("class", "fa fa-cart-plus fa-1x");
+  ibtn.ariaHidden = true;
+  ibtn.dataset.id = `${product.id}`;
+
+  span.append(ibtn);
+  divCart.append(pPrice);
+  divCart.append(span);
+  divBody.append(pTitle);
+  divBody.append(divCart);
+  divCard.append(i);
+  divCard.append(img);
+  divCard.append(divBody);
+
+  return divCard;
+}
+
 function showCartDetail() {
   resume.innerHTML = "";
   finalPrice.innerHTML = "";
@@ -924,12 +1004,49 @@ function showCartDetail() {
     resume.innerHTML = `<li>Aun no hay productos en la cesta</li>`;
   } else {
     cart.getPorductList().forEach((product) => {
-      resume.innerHTML += `<li>${product.prodName} - $ ${product.prodPrice} x ${product.prodAmount} <button type="button" class="btn btn-danger removeItem" id="${product.prodId}">
-      &times;
-    </button></li>`;
+      resume.append(productInCart(product))
     });
   }
   finalPrice.innerHTML += `${cart.showResume()}`;
+}
+
+function productInCart(product) {
+  let li = document.createElement('li')
+  let h5Title = document.createElement('h5')
+  let btnRemove = document.createElement('button')
+  let h5Price= document.createElement('h5')
+  let div = document.createElement('div')
+  let btnDecrement = document.createElement('button')
+  let span = document.createElement('span')
+  let btnIncrement = document.createElement('button')
+
+  h5Title.setAttribute('class',"d-flex justify-content-between")
+  h5Title.innerText = `${product.prodName}`
+  btnRemove.setAttribute('class',"btn btn-danger removeItem")
+  btnRemove.id = `${product.prodId}`
+  btnRemove.innerHTML = "&times;"
+  h5Price.innerText = `$ ${product.prodPrice}`
+  btnDecrement.setAttribute('class',"btn btn-info modAmount")
+  btnDecrement.dataset.change = `dec`
+  btnDecrement.innerText = `-`
+  btnDecrement.dataset.id = `${product.prodId}`
+  btnDecrement.disabled = (product.prodAmount === 1)
+  btnIncrement.setAttribute('class',"btn btn-info modAmount")
+  btnIncrement.dataset.change = `inc`
+  btnIncrement.innerText = `+`
+  btnIncrement.dataset.id = `${product.prodId}`
+  span.classList.add('px-3')
+  span.innerText = `${product.prodAmount}`
+
+  h5Title.append(btnRemove)
+  div.append(btnDecrement)
+  div.append(span)
+  div.append(btnIncrement)
+  li.append(h5Title)
+  li.append(h5Price)
+  li.append(div)
+
+  return li;
 }
 
 function changeCategory(element) {
@@ -956,7 +1073,7 @@ function removeBgBadge(categorySelected) {
 }
 
 function updateFavorites(element) {
-  if (userInfo === undefined) {
+  if (!userInfo) {
     checkUserLogued(
       "Debe ingresar para seleccionar sus productos como favoritos."
     );
@@ -1056,58 +1173,7 @@ function getProductsOffer() {
   return products.filter((product) => product.offer === true);
 }
 
-// Muestra productos en el DOM, segun el contenedor indicado.
-function loadProducts(products, container, minChilds = 1) {
-  if (container.children.length > minChilds) {
-    document.querySelectorAll(`#${container.id} .products`).forEach((child) => {
-      container.removeChild(child);
-    });
-  }
-  let name = "";
-  for (let i = 0; i <= Math.round(products.length / 5); i++) {
-    let divContainer = document.createElement("div");
-    divContainer.classList = "products";
-    for (let j = i * 5; j < (i + 1) * 5; j++) {
-      if (products[j]) {
-        name =
-          products[j].name.length >= 15
-            ? products[j].name.substring(0, 13) + "..."
-            : (name = products[j].name);
-        divContainer.innerHTML += `<div class="card card-product">
-          <i class="fa ${
-            products[j].outstanding ? "fa-star" : "fa-star-o"
-          } fa-2x favorito" aria-hidden="true" data-id="${products[j].id}"></i>
-          <img
-            src="assets/img/productos/${products[j].image}"
-            class="card-img-top"
-            alt="${products[j].name}"
-          />
-          <div class="card-body card-body-mod">
-            <p class="card-title-mod">${name}</p>
-            <div class="card-cart">
-              ${
-                products[j].offer
-                  ? `<p class="card-price text-success fw-bold">$ ${new Intl.NumberFormat(
-                      "de-DE"
-                    ).format(products[j].price)}</p>`
-                  : `<p class="card-price">$ ${new Intl.NumberFormat(
-                      "de-DE"
-                    ).format(products[j].price)}</p>`
-              }
-              <span class="card-btn"
-                ><i class="fa fa-cart-plus fa-1x" aria-hidden="true" data-id="${
-                  products[j].id
-                }"></i
-              ></span>
-            </div>
-          </div>
-          </div>`;
-      }
-    }
-    container.appendChild(divContainer);
-  }
-}
-
+// Comprueba si el usuario mantuvo su sesion abierta.
 function userIsLogued() {
   if (localStorage.loguedUser != undefined) {
     let user = JSON.parse(localStorage.getItem("loguedUser"));
@@ -1134,10 +1200,10 @@ function getCartProductStorage() {
     localStorage.loguedUser !== undefined &&
     localStorage[`cart-${userInfo.getName()}`] !== undefined
   ) {
-    cart.clearList()
+    cart.clearList();
     let items = JSON.parse(localStorage.getItem(`cart-${userInfo.getName()}`));
     items.forEach((item) => {
-      cart.setProduct(new Product(item.prodId, item.prodName, item.prodPrice));
+      cart.setProduct(new Product(item.prodId, item.prodName, item.prodPrice, item.prodAmount));
       cantProducts.innerHTML = cart.getTotalProducts();
     });
   }
@@ -1145,7 +1211,7 @@ function getCartProductStorage() {
 
 function resetStatus() {
   favorites.length = 0;
-  setFavoritesIntoProduct()
+  setFavoritesIntoProduct();
   cart.clearList();
   cantProducts.innerHTML = cart.getTotalProducts();
   productFavoriteContainer.innerHTML = `<p class="title">Favoritos</p>`;

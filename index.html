@@ -19,6 +19,7 @@
     />
     <link rel="stylesheet" href="css/toastr.min.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" type="image/jpg" href="./favicon.ico" />
     <title>Libre Comercio | Home</title>
   </head>
   <body>
@@ -36,7 +37,12 @@
               data-bs-target="#offcanvasRight"
               aria-controls="offcanvasRight"
             ></i>
-            <div class="cart-contador"></div>
+            <div
+              class="cart-contador"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasRight"
+              aria-controls="offcanvasRight"
+            ></div>
           </div>
           <button
             class="navbar-toggler navbar-toggler-mod"
@@ -69,12 +75,7 @@
                 <span class="nav-link" hidden id="userNameLog"></span>
               </li>
               <li class="nav-item nav-item-mod" hidden>
-                <span
-                  class="nav-link"
-                  href="#"
-                  id="logOut"
-                  >Salir</span
-                >
+                <span class="nav-link" href="#" id="logOut">Salir</span>
               </li>
             </ul>
           </div>
@@ -347,9 +348,7 @@
       <div class="offcanvas-body">
         <h4>Productos</h4>
         <ul id="resume"></ul>
-        <div id="offcanvas-footer">
-          
-        </div>
+        <div id="offcanvas-footer"></div>
       </div>
     </div>
 
