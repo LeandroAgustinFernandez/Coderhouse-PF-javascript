@@ -1,4 +1,125 @@
 // CLASES
+class Cart {
+  constructor() {
+    this.productList = [];
+    this.total = 0;
+    this.text = "";
+  }
+
+  getPorductList() {
+    return this.productList;
+  }
+
+  setProduct(product) {
+    this.productList.push(product);
+  }
+
+  removeProduct(id) {
+    this.productList.forEach((product) => {
+      if (product.prodId == id) {
+        let index = this.productList.indexOf(product);
+        this.productList.splice(index, 1);
+      }
+    });
+  }
+
+  getTotalProducts() {
+    return this.productList.length;
+  }
+
+  getTotalPrice() {
+    this.total = 0;
+    for (const product of this.productList) {
+      this.total += product.getProductPrice() * product.getProductAmount();
+    }
+    this.applyDiscount();
+  }
+
+  itemExists(id) {
+    let item = this.getPorductList().find((product) => product.prodId === id);
+    return item;
+  }
+
+  applyDiscount() {
+    let quantity = this.getTotalProducts();
+    if (quantity < 3) {
+      this.total = this.total;
+      this.text = "No se aplicaron descuentos"
+    } else if (quantity === 3) {
+      this.total -= this.total * 0.1;
+      this.text = `Se aplico un descuento del 10%`;
+    } else if (quantity === 4) {
+      this.total -= this.total * 0.15;
+      this.text = `Se aplico un descuento del 15%`;
+    } else if (quantity >= 5) {
+      this.total -= this.total * 0.2;
+      this.text = `Se aplico un descuento del 20%`;
+    }
+  }
+
+  showResume() {
+    this.getTotalPrice();
+    let resumePrice = {
+      total: this.total,
+      cant: this.getTotalProducts(),
+      text: this.text,
+    };
+    return resumePrice;
+  }
+
+  clearList() {
+    this.productList.length = 0;
+  }
+}
+
+class Product {
+  constructor(prodId, prodName, prodPrice, prodAmount = 1) {
+    this.prodId = prodId;
+    this.prodName = prodName;
+    this.prodPrice = prodPrice;
+    this.prodAmount = prodAmount;
+  }
+
+  getProductId() {
+    return this.prodId;
+  }
+
+  getProductName() {
+    return this.prodName;
+  }
+
+  getProductPrice() {
+    return this.prodPrice;
+  }
+
+  getProductAmount() {
+    return this.prodAmount;
+  }
+
+  setProductAmount(mod = "inc") {
+    mod === "inc" ? this.prodAmount++ : this.prodAmount--;
+  }
+}
+
+class User {
+  constructor(userName, userPassword) {
+    this.name = userName;
+    this.password = userPassword;
+  }
+
+  sayHello() {
+    return `Bienvenido ${this.name}!`;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  clearInfo() {
+    this.name = "";
+    this.password = "";
+  }
+}
 
 // VARIABLES GLOBALES
 let userInfo;
