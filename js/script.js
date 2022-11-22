@@ -44,7 +44,7 @@ class Cart {
     let quantity = this.getTotalProducts();
     if (quantity < 3) {
       this.total = this.total;
-      this.text = "No se aplicaron descuentos"
+      this.text = "No se aplicaron descuentos";
     } else if (quantity === 3) {
       this.total -= this.total * 0.1;
       this.text = `Se aplico un descuento del 10%`;
@@ -140,7 +140,8 @@ const productDetails = document.querySelectorAll(".home_products-details");
 const favorites = [];
 const logOutBtn = document.querySelector("#logOut");
 const closePayment = document.querySelector("#paymentEnd");
-// Lista de productoss
+
+// LISTA DE PRODUCTOS
 const products = [
   {
     id: 1,
@@ -881,6 +882,12 @@ finalPrice.addEventListener("click", (e) => {
 
 closePayment.addEventListener("click", closeUserPayment);
 
+window.addEventListener("load", () => {
+  init();
+});
+
+// FUNCIONES
+// USUARIO: Ingreso a la pagina.
 function loginUser() {
   let userName = document.querySelector("#username").value;
   let userPass = document.querySelector("#password").value;
@@ -894,7 +901,7 @@ function loginUser() {
     setUserInfo(userName, userPass);
   }
 }
-
+// USUARIO: Manejo de la informacion de usuario en el DOM y Storage al ingresar.
 function setUserInfo(name, pass) {
   userInfo = new User(name, pass);
   loadUserInfoDOM(userInfo.getName(), false);
@@ -904,7 +911,7 @@ function setUserInfo(name, pass) {
   getProductsFavorites();
   getCartProductStorage();
 }
-
+// USUARIO: Manejo de la informacion de usuario en el DOM y Storage al desloguearse.
 function unsetUserInfo() {
   userInfo.clearInfo();
   userInfo = undefined;
@@ -914,15 +921,19 @@ function unsetUserInfo() {
   resetStatus();
   init();
 }
-
+// USUARIO: Manejo de la informacion de usuario DOM.
 function loadUserInfoDOM(name, nameHide) {
   document.querySelector("#userNameLog").innerText = name;
   document.querySelector("#userNameLog").hidden = nameHide;
   document.querySelector("#userLogin").hidden = !nameHide;
   logOutBtn.parentElement.hidden = nameHide;
 }
-
-// MUESTRA PRODUCTOS EN EL DOM SEGUN LOS PRODUCTOS Y CONTENEDOR INDICADO
+// USUARIO: Comprueba si el usuario esta logueado.
+function checkUserLogued(msg) {
+  toastr.info(msg);
+  clickForModals("#userLogin");
+}
+// PRODUCTOS: Muestra productos en el DOM segun el contenedor indicado.
 function loadProducts(products, container, minChilds = 1) {
   clearContainer(container, minChilds);
   for (let i = 0; i <= Math.round(products.length / 5); i++) {
@@ -936,7 +947,7 @@ function loadProducts(products, container, minChilds = 1) {
     container.appendChild(divContainer);
   }
 }
-
+// PRODUCTOS: Vacia el contendor indicado.
 function clearContainer(container, minChilds) {
   if (container.children.length > minChilds) {
     document.querySelectorAll(`#${container.id} .products`).forEach((child) => {
@@ -945,7 +956,7 @@ function clearContainer(container, minChilds) {
   }
 }
 
-// TEMPLATE CARD DE PRODUCTO
+// PRODUCTOS: Crea y retorna un elemento CARD (tarjeta) con la informacion del producto.
 function productCard(product) {
   const { id, name, image, price, outstanding, offer } = product;
   let nameTemp = name.length >= 15 ? name.substring(0, 13) + "..." : name;
@@ -993,7 +1004,50 @@ function productCard(product) {
 
   return divCard;
 }
-// RETORNA EL DETALLE DE COMPRA EN EL DOM
+// PRODUCTOS: Agrega el producto al carrito. Si existe suma una unidad.
+function cartButtons(element) {
+  if (!userInfo) {
+    checkUserLogued("Debe ingresar antes de comenzar a comprar");
+  } else {
+    let idCard = parseInt(element.dataset.id);
+    let item = cart.itemExists(idCard);
+    if (!item) {
+      let { id, name, price } = products.find(
+        (product) => product.id === idCard
+      );
+      cart.setProduct(new Product(id, name, price));
+      toastr.success("Se agrego un producto al carrito!");
+    } else {
+      item.setProductAmount();
+      toastr.success("Se agrego una unidad a un producto existente!");
+    }
+    saveLocalStorage(
+      `cart-${userInfo.getName()}`,
+      JSON.stringify(cart.getPorductList())
+    );
+    cantProducts.innerHTML = cart.getTotalProducts();
+  }
+}
+// PRODUCTOS: Carga los productos segun la categoria seleccionada.
+function changeCategory(element) {
+  removeBgBadge(element);
+  element.dataset.category !== "all"
+    ? loadProducts(
+        getProductsByCategory(element.dataset.category),
+        productContainer,
+        2
+      )
+    : loadProducts(products, productContainer, 2);
+}
+// PRODUCTOS: Devuelve los productos segun la categoria ingresada.
+function getProductsByCategory(category) {
+  return products.filter((product) => product.category === category);
+}
+// PRODUCTOS: Devuelve los productos en oferta.
+function getProductsOffer() {
+  return products.filter((product) => product.offer === true);
+}
+// CARRITO: Muestra en el DOM el detalle de los productos dentro del carrito.
 function showCartDetail() {
   resume.innerHTML = "";
   finalPrice.innerHTML = "";
@@ -1010,14 +1064,14 @@ function showCartDetail() {
     cart.getTotalProducts() === 0 ? "hidden" : ""
   }>Finalizar Compra</button>`;
 }
-// TEMPLATE RESUMEN
+// CARRITO: Muestra en el DOM el resumen del carrito y si se aplicaron descuentos.
 function showResumenCart({ total, cant, text }) {
   return `<h4 class="my-4">Total   $ ${total}</h4>
   <h5 class="fst-italic">Por un total de ${cant} productos</h5>
   <h5 class="fst-italic">${text}</h5>`;
 }
 
-// TEMPLATE LIST-ITEM RESUMEN DE COMPRA
+// CARRITO: Crea y retornar un elemento de Lista para el detalle del carrito.
 function productInCart(product) {
   const { prodName, prodId, prodPrice, prodAmount } = product;
   let li = document.createElement("li");
@@ -1057,7 +1111,7 @@ function productInCart(product) {
 
   return li;
 }
-
+// CARRITO: Elimina un elemento del carrito.
 function removeItemFromCart(e) {
   cart.removeProduct(e.target.id);
   showCartDetail();
@@ -1068,7 +1122,7 @@ function removeItemFromCart(e) {
   );
   toastr.warning("Se elimino el producto correctamente.");
 }
-
+// CARRITO: Modifica la cantidad de un producto presente en el carrito.
 function changeProductAmount(e) {
   let product = cart.itemExists(parseInt(e.target.dataset.id));
   product.setProductAmount(e.target.dataset.change);
@@ -1078,27 +1132,7 @@ function changeProductAmount(e) {
     JSON.stringify(cart.getPorductList())
   );
 }
-
-function changeCategory(element) {
-  removeBgBadge(element);
-  element.dataset.category !== "all"
-    ? loadProducts(
-        getProductsByCategory(element.dataset.category),
-        productContainer,
-        2
-      )
-    : loadProducts(products, productContainer, 2);
-}
-
-function removeBgBadge(categorySelected) {
-  categories.forEach((category) => {
-    category.classList.remove("bg-dark");
-    category.classList.add("bg-secondary");
-  });
-  categorySelected.classList.remove("bg-secondary");
-  categorySelected.classList.add("bg-dark");
-}
-
+// FAVORITOS: Agrega o elimina un producto de la lista de favoritos y lo refresca en el DOM.
 function updateFavorites(element) {
   if (!userInfo) {
     checkUserLogued(
@@ -1132,7 +1166,7 @@ function updateFavorites(element) {
     );
   }
 }
-
+// FAVORITOS: Modifica la lista de productos para que los favoritos se reflejen en Ofertas y Productos.
 function setFavoritesIntoProduct() {
   products.forEach((product) => {
     product.outstanding = false;
@@ -1145,37 +1179,28 @@ function setFavoritesIntoProduct() {
   loadProducts(getProductsOffer(), productOfferContainer);
   loadProducts(favorites, productFavoriteContainer);
 }
-
-function cartButtons(element) {
-  if (!userInfo) {
-    checkUserLogued("Debe ingresar antes de comenzar a comprar");
-  } else {
-    let idCard = parseInt(element.dataset.id);
-    let item = cart.itemExists(idCard);
-    if (!item) {
-      let { id, name, price } = products.find(
-        (product) => product.id === idCard
-      );
-      cart.setProduct(new Product(id, name, price));
-      toastr.success("Se agrego un producto al carrito!");
-    } else {
-      item.setProductAmount();
-      toastr.success("Se agrego una unidad a un producto existente!");
-    }
-    saveLocalStorage(
-      `cart-${userInfo.getName()}`,
-      JSON.stringify(cart.getPorductList())
-    );
-    cantProducts.innerHTML = cart.getTotalProducts();
-  }
+// DOM: Modifica clases segun la seleccion de categoria del usuario.
+function removeBgBadge(categorySelected) {
+  categories.forEach((category) => {
+    category.classList.remove("bg-dark");
+    category.classList.add("bg-secondary");
+  });
+  categorySelected.classList.remove("bg-secondary");
+  categorySelected.classList.add("bg-dark");
 }
-
-function checkUserLogued(msg) {
-  toastr.info(msg);
-  clickForModals("#userLogin");
+// DOM: Abre el modal segun el id enviado.
+function clickForModals(id) {
+  document.querySelector(id).click();
 }
-
-// MUESTRA LA INFORMACION DEL CART EN EL MODAL DEL DOM.
+// DOM: Reseteo del DOM al salir el usuario.
+function resetStatus() {
+  favorites.length = 0;
+  setFavoritesIntoProduct();
+  cart.clearList();
+  cantProducts.innerHTML = cart.getTotalProducts();
+  productFavoriteContainer.innerHTML = `<p class="title">Favoritos</p>`;
+}
+// DOM: Despliega un modal con el cierre de la compra.
 function loadPaymentDetail() {
   document.querySelector(
     "#paymentUser"
@@ -1202,7 +1227,7 @@ function loadPaymentDetail() {
   clickForModals("#closeOffcanvasProducts");
   clickForModals("#openModal");
 }
-
+// DOM y STORAGE: Finaliza la compra y elimina el storage del carrito relacionado al usuario.
 function closeUserPayment() {
   clickForModals("#openModal");
   cart.clearList();
@@ -1212,35 +1237,18 @@ function closeUserPayment() {
     `${userInfo.getName()} finalizaste la compra exitosamente! Gracias! Esperamos verte de nuevo!`
   );
 }
-
-// Llama a otras funciones, y ejecuta compras segun el usuario lo requiera.
-function init() {
-  userIsLogued();
-  if (userInfo !== undefined) {
-    getCartProductStorage();
-    getProductsFavorites();
-  } else {
-    loadProducts(getProductsOffer(), productOfferContainer);
-    loadProducts(products, productContainer, 2);
-  }
+// STORAGE: Funcion para simplificar el guardado en el storage.
+function saveLocalStorage(clave, valor) {
+  localStorage.setItem(clave, valor);
 }
-
-function getProductsByCategory(category) {
-  return products.filter((product) => product.category === category);
-}
-
-function getProductsOffer() {
-  return products.filter((product) => product.offer === true);
-}
-
-// Comprueba si el usuario mantuvo su sesion abierta.
+// STORAGE: Comprueba si la sesion de usuario se encuentra abierta.
 function userIsLogued() {
   if (localStorage.loguedUser != undefined) {
     let user = JSON.parse(localStorage.getItem("loguedUser"));
     setUserInfo(user.name, user.password);
   }
 }
-
+// STORAGE: Devuelve los productos guardados en el storage seleccionados como favoritos por el usuario.
 function getProductsFavorites() {
   if (
     localStorage.loguedUser !== undefined &&
@@ -1254,7 +1262,7 @@ function getProductsFavorites() {
   }
   setFavoritesIntoProduct();
 }
-
+// STORAGE: Devuelve los productos del carrito guardados en el storage por el usuario que no finalizo la compra.
 function getCartProductStorage() {
   if (
     localStorage.loguedUser !== undefined &&
@@ -1275,23 +1283,14 @@ function getCartProductStorage() {
     });
   }
 }
-
-function saveLocalStorage(clave, valor) {
-  localStorage.setItem(clave, valor);
+// DOM: Inicializa los contenedores mostrando los productos segun el usuario este logueado o no.
+function init() {
+  userIsLogued();
+  if (userInfo !== undefined) {
+    getCartProductStorage();
+    getProductsFavorites();
+  } else {
+    loadProducts(getProductsOffer(), productOfferContainer);
+    loadProducts(products, productContainer, 2);
+  }
 }
-
-function clickForModals(id) {
-  document.querySelector(id).click();
-}
-
-function resetStatus() {
-  favorites.length = 0;
-  setFavoritesIntoProduct();
-  cart.clearList();
-  cantProducts.innerHTML = cart.getTotalProducts();
-  productFavoriteContainer.innerHTML = `<p class="title">Favoritos</p>`;
-}
-// Ejecuta el programa
-window.addEventListener("load", () => {
-  init();
-});
