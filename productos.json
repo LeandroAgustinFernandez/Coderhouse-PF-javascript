@@ -672,8 +672,9 @@
   {
     "id": 68,
     "name": "MOUSE WIRELESS STEELSERIES PRIME",
-    "description": "price 400IPS PRESTIGE OM 5 BOTONES RGB DIESTRO BLACK (5707119041256)",
-    "offerLista": 29249,
+    "description": "IPS PRESTIGE OM 5 BOTONES RGB DIESTRO BLACK (5707119041256)",
+    "price": 2924,
+    "offer": false,
     "image": "9-accesorio.jpg",
     "category": "accesorios",
     "outstanding": false
@@ -681,7 +682,8 @@
   {
     "id": 69,
     "name": "MOUSE WIRELESS LOGITECH",
-    "description": "G PRO priceSUPERLIGHT HERO 25K 25600 DPI MAGENTA 910-005955 (97855159830)",
+    "description": "G PRO SUPERLIGHT HERO 25K 25600 DPI MAGENTA 910-005955 (97855159830)",
+    "price": 8000,
     "offer": false,
     "image": "10-accesorio.jpg",
     "category": "accesorios",
@@ -690,8 +692,9 @@
   {
     "id": 70,
     "name": "MOUSE STEELSERIES PRIME",
-    "description": "price 450IPS PRESTIGE OM 6 BOTONES 69G RGB DIESTRO BLACK (5707119040365)",
-    "offerLista": 14109,
+    "description": "IPS PRESTIGE OM 6 BOTONES 69G RGB DIESTRO BLACK (5707119040365)",
+    "price": 12269,
+    "offer": false,
     "image": "11-accesorio.jpg",
     "category": "accesorios",
     "outstanding": false
