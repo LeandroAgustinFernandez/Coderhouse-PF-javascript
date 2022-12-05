@@ -1,4 +1,4 @@
 # Coderhoyse-PF-javascript
 
 ## Proyecto E-Commerce curso Javascript Coderhouse.
-### Algoritmo seleccion de productos
+### Simulacion de un E-Commerce.

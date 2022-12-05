@@ -402,15 +402,35 @@
 
     <!-- Modal para mostrar el final de la compra. -->
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal" id="openModal" hidden>
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#paymentModal"
+      id="openModal"
+      hidden
+    >
       Launch demo modal
     </button>
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="paymentModal"
+      tabindex="-1"
+      aria-labelledby="paymentModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="paymentModalLabel">Detalle de compra</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h1 class="modal-title fs-5" id="paymentModalLabel">
+              Detalle de compra
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <form class="d-flex">
@@ -424,14 +444,14 @@
                   <th>Cantidad</th>
                 </tr>
               </thead>
-                <tbody id="tableBody">
-
-                </tbody>
+              <tbody id="tableBody"></tbody>
             </table>
             <div id="paymentTotal"></div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-info" id="paymentEnd">Confirmar</button>
+            <button type="button" class="btn btn-info" id="paymentEnd">
+              Confirmar
+            </button>
           </div>
         </div>
       </div>
@@ -444,6 +464,10 @@
     ></script>
     <script src="js/jquery-1.9.1.min.js"></script>
     <script src="js/toastr.min.js"></script>
+    <script src="js/class/user.js"></script>
+    <script src="js/class/cart.js"></script>
+    <script src="js/class/product.js"></script>
     <script src="js/script.js"></script>
+
   </body>
 </html>
